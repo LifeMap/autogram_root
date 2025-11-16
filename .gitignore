@@ -1,0 +1,13 @@
+# 모든 파일과 폴더 무시
+*
+
+# .gitignore 파일은 추적해야 함
+!.gitignore
+
+# readme.md 파일은 추적해야 함
+!readme.md
+
+# .claude 폴더는 제외
+!.claude/
+!.claude/**
+
