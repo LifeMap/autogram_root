@@ -11,10 +11,12 @@
 !.claude/
 !.claude/**
 
-# prds 폴더는 제외
+# prds 폴더는 추적하되 하위 파일은 무시
 !prds/
-prds/**
+prds/*
+!prds/.gitkeep
 
-# docs 폴더 제외
+# docs 폴더는 추적하되 하위 파일은 무시
 !docs/
-docs/**
+docs/*
+!docs/.gitkeep
