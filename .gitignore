@@ -11,3 +11,8 @@
 !.claude/
 !.claude/**
 
+# prds 폴더는 제외
+!prds/
+
+# docs 폴더 제외
+!docs/
