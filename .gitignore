@@ -13,6 +13,8 @@
 
 # prds 폴더는 제외
 !prds/
+prds/**
 
 # docs 폴더 제외
 !docs/
+docs/**
