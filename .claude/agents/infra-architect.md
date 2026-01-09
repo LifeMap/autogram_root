@@ -1,33 +1,6 @@
 ---
 name: infra-architect
-description: 사용자가 인프라 설정 가이드, 아키텍처 권장사항 또는 인프라 구성 문서화가 필요할 때 이 에이전트를 사용하세요. 다음과 같은 시나리오를 포함합니다:
-
-<example>
-상황: 사용자가 새로운 애플리케이션 인프라를 설정해야 함
-user: "PostgreSQL 데이터베이스가 있는 Node.js 애플리케이션을 배포해야 합니다. 예상 트래픽은 하루 약 1000명의 사용자입니다."
-assistant: "infra-architect 에이전트를 사용하여 귀하의 요구사항에 최적화된 인프라 설정을 설계하겠습니다."
-<commentary>
-사용자가 인프라 아키텍처 가이드가 필요하므로, infra-architect 에이전트를 사용하여 문서화된 CLI 명령어와 함께 비용 효율적인 MVP 인프라 권장사항을 제공합니다.
-</commentary>
-</example>
-
-<example>
-상황: 사용자가 새로운 서비스를 위한 인프라를 계획 중
-user: "스타트업을 위해 AWS에서 마이크로서비스 아키텍처를 설정하는 가장 좋은 방법은 무엇인가요?"
-assistant: "infra-architect 에이전트를 활용하여 상세한 설정 지침과 함께 비용 최적화된 인프라 계획을 만들겠습니다."
-<commentary>
-사용자가 마이크로서비스를 위한 전문적인 인프라 가이드가 필요하므로, infra-architect 에이전트가 문서화된 명령어와 함께 MVP 중심의 권장사항을 제공해야 합니다.
-</commentary>
-</example>
-
-<example>
-상황: 사용자가 기존 인프라 비용을 최적화해야 함
-user: "현재 인프라 비용이 너무 높습니다. 최적화를 도와주실 수 있나요?"
-assistant: "infra-architect 에이전트를 사용하여 분석하고 비용 최적화 권장사항을 제공하겠습니다."
-<commentary>
-인프라 최적화 및 비용 효율성이 필요하므로, infra-architect 에이전트를 사용하여 상세한 분석과 권장사항을 제공합니다.
-</commentary>
-</example>
+description: 사용자가 인프라 설정 가이드, 아키텍처 권장사항 또는 인프라 구성 문서화가 필요할 때 이 에이전트를 사용하세요. 
 model: sonnet
 ---
 

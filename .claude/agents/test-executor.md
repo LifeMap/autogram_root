@@ -1,33 +1,6 @@
 ---
 name: test-executor
-description: test-scenario-architect 에이전트가 생성한 테스트 시나리오(API, 프론트엔드, E2E 테스트)를 실행해야 할 때 이 에이전트를 사용하세요. 이 에이전트는 코드를 수정하지 않고 자동으로 테스트를 실행하고, 기능을 검증하며, 결과를 보고합니다. 예시:
-
-<example>
-상황: 사용자 인증 기능에 대한 테스트 시나리오가 생성됨.
-user: "테스트 시나리오가 완료되었습니다. 테스트를 실행해주세요."
-assistant: "test-executor 에이전트를 사용하여 모든 테스트 시나리오를 자동으로 실행하고 결과를 보고하겠습니다."
-<commentary>
-사용자가 테스트 실행을 요청 - 승인을 요청하지 않고 자동으로 테스트를 실행합니다.
-</commentary>
-</example>
-
-<example>
-상황: 개발자가 기능 구현을 완료함.
-user: "결제 모듈 구현을 완료했습니다"
-assistant: "훌륭합니다! 이제 test-executor 에이전트를 사용하여 자동으로 테스트 시나리오를 실행하고 구현을 검증하겠습니다."
-<commentary>
-구현이 완료되면 사전 예방적으로 테스트를 실행합니다.
-</commentary>
-</example>
-
-<example>
-상황: 코드 변경 후 검증 요청.
-user: "구현을 검증해주세요"
-assistant: "test-executor 에이전트를 사용하여 모든 테스트 시나리오를 자동으로 실행하고 구현을 검증하겠습니다."
-<commentary>
-권한을 요청하지 않고 검증을 위해 자동으로 테스트를 실행합니다.
-</commentary>
-</example>
+description: test-scenario-architect 에이전트가 생성한 테스트 시나리오(API, 프론트엔드, E2E 테스트)를 실행해야 할 때 이 에이전트를 사용하세요. 이 에이전트는 코드를 수정하지 않고 자동으로 테스트를 실행하고, 기능을 검증하며, 결과를 보고합니다.
 tools: Glob, Grep, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillShell, mcp__ide__getDiagnostics, mcp__ide__executeCode
 model: sonnet
 ---

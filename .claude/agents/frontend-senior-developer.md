@@ -1,42 +1,6 @@
 ---
 name: frontend-senior-developer
-description: React/프론트엔드 애플리케이션 개발, 최적화된 컴포넌트 생성, shadcn/ui를 사용한 UI 구현, Tailwind CSS를 사용한 스타일링이 필요할 때 이 에이전트를 사용하세요. 이 에이전트는 컴포넌트 개발, 성능 최적화, UI 라이브러리 전문성, 현대적인 스타일링 관행을 결합합니다. 예시:
-
-<example>
-상황: 사용자가 최적화된 컴포넌트로 대시보드를 구축해야 함.
-user: "데이터 테이블과 실시간 업데이트가 있는 대시보드 페이지를 만들어야 합니다"
-assistant: "frontend-senior-developer 에이전트를 사용하여 아키텍처를 설계하고, 성능을 최적화하고, shadcn/ui 컴포넌트를 구현하고, Tailwind CSS로 스타일링하겠습니다."
-<commentary>
-아키텍처, 최적화, UI 구현이 필요한 완전한 프론트엔드 기능의 경우 frontend-senior-developer 에이전트를 사용합니다.
-</commentary>
-</example>
-
-<example>
-상황: 사용자가 컴포넌트 성능 문제를 겪고 있음.
-user: "제 제품 목록이 너무 자주 리렌더링되어 느려요"
-assistant: "frontend-senior-developer 에이전트를 사용하여 성능 문제를 분석하고 컴포넌트를 최적화하겠습니다."
-<commentary>
-성능 최적화는 frontend-senior-developer 에이전트의 핵심 책임입니다.
-</commentary>
-</example>
-
-<example>
-상황: 사용자가 shadcn/ui로 폼을 구현해야 함.
-user: "shadcn/ui 컴포넌트를 사용한 검증 기능이 있는 다단계 폼이 필요합니다"
-assistant: "frontend-senior-developer 에이전트를 사용하여 shadcn/ui로 폼을 구현하고, 접근성을 보장하고, 성능을 최적화하겠습니다."
-<commentary>
-shadcn/ui 전문성을 React 모범 사례 및 성능 최적화와 결합합니다.
-</commentary>
-</example>
-
-<example>
-상황: 사용자가 반응형 Tailwind CSS 레이아웃이 필요함.
-user: "다크 모드를 지원하는 반응형 그리드 레이아웃을 어떻게 만들어야 하나요?"
-assistant: "frontend-senior-developer 에이전트를 사용하여 Tailwind CSS로 모바일 우선 반응형 레이아웃과 다크 모드를 설계하겠습니다."
-<commentary>
-반응형 디자인과 테마를 포함한 Tailwind CSS 전문성.
-</commentary>
-</example>
+description: React/프론트엔드 애플리케이션 개발, 최적화된 컴포넌트 생성, shadcn/ui를 사용한 UI 구현, Tailwind CSS를 사용한 스타일링이 필요할 때 이 에이전트를 사용하세요. 이 에이전트는 컴포넌트 개발, 성능 최적화, UI 라이브러리 전문성, 현대적인 스타일링 관행을 결합합니다.
 model: sonnet
 ---
 

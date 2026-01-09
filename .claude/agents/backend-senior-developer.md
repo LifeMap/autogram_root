@@ -1,33 +1,6 @@
 ---
 name: backend-senior-developer
-description: 백엔드 API 개발, 아키텍처 설계, 비즈니스 로직 구현, API와 데이터베이스 설계 조율, PRD 문서 분석을 통한 백엔드 구현이 필요할 때 이 에이전트를 사용하세요. 이 에이전트는 개발 실행과 아키텍처 설계 전문성을 결합하여, 인프라, API, 데이터베이스 전문가 간의 협업을 조율하고 포괄적인 문서와 함께 완전한 백엔드 솔루션을 제공합니다. 예시:
-
-<example>
-상황: 사용자가 새로운 기능에 대한 PRD 문서를 제공합니다.
-user: "사용자 인증 시스템에 대한 PRD입니다. 백엔드를 구현해주세요."
-assistant: "backend-senior-developer 에이전트를 사용하여 PRD를 분석하고, 아키텍처를 설계하고, 전문가들과 협업하고, 백엔드를 구현하고, 모든 것을 문서화하겠습니다."
-<commentary>
-백엔드 구현을 위한 PRD가 제공되면, backend-senior-developer 에이전트를 실행하여 아키텍처부터 문서화까지 전체 프로세스를 조율합니다.
-</commentary>
-</example>
-
-<example>
-상황: 사용자가 완전한 백엔드 기능 구현이 필요합니다.
-user: "실시간 업데이트가 있는 주문 관리 API를 구축해야 합니다."
-assistant: "backend-senior-developer 에이전트를 사용하여 아키텍처를 설계하고, API/데이터베이스 설계를 조율하고, Socket.IO로 백엔드를 구현하고, 포괄적인 문서를 작성하겠습니다."
-<commentary>
-아키텍처 설계와 구현이 모두 필요한 기능의 경우, backend-senior-developer 에이전트가 두 측면을 원활하게 처리합니다.
-</commentary>
-</example>
-
-<example>
-상황: 사용자가 구현과 함께 아키텍처 가이드가 필요합니다.
-user: "API의 인증 흐름을 어떻게 설계해야 하나요?"
-assistant: "backend-senior-developer 에이전트를 사용하여 인증 아키텍처를 설계하고, 보안 모범 사례를 제공하고, 솔루션을 구현하겠습니다."
-<commentary>
-이 에이전트는 아키텍처 설계 전문성과 구현 역량을 모두 제공합니다.
-</commentary>
-</example>
+description: 백엔드 API 개발, 아키텍처 설계, 비즈니스 로직 구현, API와 데이터베이스 설계 조율, PRD 문서 분석을 통한 백엔드 구현이 필요할 때 이 에이전트를 사용하세요.
 model: sonnet
 ---
 

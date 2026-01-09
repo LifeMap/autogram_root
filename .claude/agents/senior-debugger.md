@@ -1,33 +1,6 @@
 ---
 name: senior-debugger
-description: 기존 코드의 오류를 디버깅할 때, 특히 이전 수정 시도가 실패한 경우에 이 에이전트를 사용하세요. 예시:
-
-<example>
-상황: 에이전트가 실패한 솔루션을 반복하지 않기 위해 디버그 로그를 유지함.
-user: "로그인 함수에서 TypeError가 발생합니다. 변수 타입을 변경해봤는데 여전히 실패합니다."
-assistant: "senior-debugger 에이전트를 사용하여 이 오류를 조사하고 이전에 실패한 접근 방식을 반복하지 않도록 하겠습니다."
-<commentary>
-디버깅이 필요하고 실패한 시도의 이력이 있으므로, senior-debugger 에이전트를 실행하여 체계적으로 문제를 진단하고 수정하며 프로세스를 문서화합니다.
-</commentary>
-</example>
-
-<example>
-상황: 수정사항 테스트를 위해 서버 실행이 필요함.
-user: "최근 변경 후 API 엔드포인트가 500 오류를 반환합니다."
-assistant: "senior-debugger 에이전트를 사용하여 이 서버 오류를 수정하고 솔루션을 검증하겠습니다."
-<commentary>
-서버 사이드 코드 디버깅과 테스트가 필요하므로, senior-debugger 에이전트를 사용하여 서버 프로세스를 적절히 관리해야 합니다.
-</commentary>
-</example>
-
-<example>
-상황: 코드 수정 후 사전 예방적 디버깅.
-user: "데이터베이스 연결 로직을 방금 업데이트했습니다."
-assistant: "중요한 인프라 코드를 변경하셨으므로, senior-debugger 에이전트를 사용하여 오류가 없는지 확인하고 변경사항이 올바르게 작동하는지 검증하겠습니다."
-<commentary>
-중요한 코드 변경 후 senior-debugger를 사전 예방적으로 사용하여 문제를 조기에 발견합니다.
-</commentary>
-</example>
+description: 기존 코드의 오류를 디버깅할 때, 특히 이전 수정 시도가 실패한 경우에 이 에이전트를 사용하세요.
 model: sonnet
 ---
 

@@ -1,42 +1,6 @@
 ---
 name: test-scenario-architect
-description: RESTful API, React 애플리케이션, 엔드투엔드 사용자 플로우에 대한 포괄적인 테스트 시나리오가 필요할 때 이 에이전트를 사용하세요. 이 에이전트는 코드베이스를 분석하고, 테스트 시나리오를 설계하며, 브라우저 자동화를 위한 Playwright 스크립트를 생성합니다. 예시:
-
-<example>
-상황: 사용자가 인증 API 엔드포인트 개발을 완료함.
-user: "POST /api/auth/login 엔드포인트 구현을 완료했습니다. 테스트 시나리오를 만들어주실 수 있나요?"
-assistant: "test-scenario-architect 에이전트를 사용하여 인증, 검증, 오류 케이스를 다루는 포괄적인 API 테스트 시나리오를 생성하겠습니다."
-<commentary>
-API 개발이 완료되었고 테스트 시나리오가 필요함 - test-scenario-architect를 사용합니다.
-</commentary>
-</example>
-
-<example>
-상황: 사용자가 React 폼 컴포넌트를 구축함.
-user: "UserRegistrationForm 컴포넌트입니다. 무엇을 테스트해야 하나요?"
-assistant: "test-scenario-architect 에이전트를 사용하여 컴포넌트를 분석하고 모든 상호작용과 엣지 케이스에 대한 테스트 시나리오를 생성하겠습니다."
-<commentary>
-React 컴포넌트 테스트 시나리오 필요 - test-scenario-architect를 사용합니다.
-</commentary>
-</example>
-
-<example>
-상황: 사용자가 완전한 기능에 대한 엔드투엔드 테스트가 필요함.
-user: "쇼핑 카트 기능을 완료했습니다. 전체 사용자 여정을 테스트해야 합니다."
-assistant: "test-scenario-architect 에이전트를 사용하여 쇼핑 카트 플로우에 대한 포괄적인 e2e 테스트 시나리오와 Playwright 스크립트를 생성하겠습니다."
-<commentary>
-완전한 사용자 여정 테스트 필요 - e2e 시나리오를 위해 test-scenario-architect를 사용합니다.
-</commentary>
-</example>
-
-<example>
-상황: 기능 완료 후 사전 예방적 사용.
-user: "Stripe를 사용한 결제 처리 기능이 완료되었습니다."
-assistant: "중요한 기능을 완료하셨으므로, QA가 시작되기 전에 test-scenario-architect 에이전트를 사용하여 API, 프론트엔드, e2e 테스트를 포함한 포괄적인 테스트 시나리오를 생성하겠습니다."
-<commentary>
-기능 완료가 언급되면 철저한 테스트 커버리지를 보장하기 위해 사전 예방적으로 사용합니다.
-</commentary>
-</example>
+description: RESTful API, React 애플리케이션, 엔드투엔드 사용자 플로우에 대한 포괄적인 테스트 시나리오가 필요할 때 이 에이전트를 사용하세요. 이 에이전트는 코드베이스를 분석하고, 테스트 시나리오를 설계하며, 브라우저 자동화를 위한 Playwright 스크립트를 생성합니다.
 tools: Glob, Grep, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillShell, mcp__ide__getDiagnostics, mcp__ide__executeCode
 model: sonnet
 ---

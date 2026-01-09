@@ -1,10 +1,10 @@
 # 프로젝트 서브에이전트 레지스트리
 
-최종 업데이트: 2025-11-29T00:00:00+09:00
+최종 업데이트: 2026-01-10T04:15:40+09:00
 
 ## 프로젝트 개요
 
-이 프로젝트는 바이브코딩 시스템 개발을 위한 전문화된 AI 에이전트 컬렉션을 포함하고 있습니다. 각 서브에이전트는 특정 도메인의 전문가로서 설계되었으며, 제품 요구사항 분석, 백엔드/프론트엔드 개발, RESTful API 설계, 데이터베이스 관리, UX 디자인, 코드 리뷰, 테스트, 디버깅, 인프라 구축 등 전체 소프트웨어 개발 생명주기를 담당합니다.
+이 프로젝트는 바이브코딩 시스템 개발을 위한 전문화된 AI 에이전트 컬렉션을 포함하고 있습니다. 각 서브에이전트는 특정 도메인의 전문가로서 설계되었으며, 제품 요구사항 분석, 백엔드/프론트엔드 개발, RESTful API 설계, 데이터베이스 관리, UX 디자인, 코드 리뷰, 테스트, 디버깅, 인프라 구축, 마케팅 전략, 브랜드 아이덴티티, 작업 관리 등 전체 소프트웨어 개발 생명주기 및 비즈니스 전략을 담당합니다.
 
 ## 프로젝트 에이전트
 
@@ -250,7 +250,7 @@ API/데이터베이스 디자인을 조율하며, Socket.IO로 백엔드를 구�
 
 - **컬렉션**: 프로젝트
 - **모델**: Sonnet
-- **사용 가능한 도구**: Glob, Grep, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillShell
+- **사용 가능한 도구**: Glob, Grep, Read, WebFetch, TodoWrite, WebSearch
 - **목적**: 보안, 성능, 가독성에 특화된 전문가 수준의 코드 리뷰 제공
 
 **사용 시기:**
@@ -332,7 +332,7 @@ API/데이터베이스 디자인을 조율하며, Socket.IO로 백엔드를 구�
 
 - **컬렉션**: 프로젝트
 - **모델**: Sonnet
-- **사용 가능한 도구**: Glob, Grep, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillShell, mcp__ide__getDiagnostics, mcp__ide__executeCode
+- **사용 가능한 도구**: Glob, Grep, Read, WebFetch, TodoWrite, WebSearch, mcp__ide__getDiagnostics, mcp__ide__executeCode
 - **목적**: RESTful API, React 애플리케이션, E2E 사용자 플로우를 위한 포괄적인 테스트 시나리오 설계 및 Playwright 스크립트 생성 전문가
 
 **사용 시기:**
@@ -374,7 +374,7 @@ API/데이터베이스 디자인을 조율하며, Socket.IO로 백엔드를 구�
 
 - **컬렉션**: 프로젝트
 - **모델**: Sonnet
-- **사용 가능한 도구**: Glob, Grep, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillShell, mcp__ide__getDiagnostics, mcp__ide__executeCode
+- **사용 가능한 도구**: Glob, Grep, Read, WebFetch, TodoWrite, WebSearch, mcp__ide__getDiagnostics, mcp__ide__executeCode
 - **목적**: test-scenario-architect가 작성한 테스트 시나리오(API, 프론트엔드, E2E)를 자동으로 실행하고 결과를 보고하는 전문가
 
 **사용 시기:**
@@ -510,10 +510,216 @@ API/데이터베이스 디자인을 조율하며, Socket.IO로 백엔드를 구�
 - 적시성: 모든 에이전트 수명 주기 이벤트 후 즉시 업데이트
 
 **중요 제약사항:**
-- 프로젝트 루트 경로에 작성: `/Volumes/dev/workspaces/twms/sns_automation/readme.md`
+- 프로젝트 루트 경로에 작성: `/Volumes/Dev/workspaces/twms/cs-agent/readme.md`
 - UTF-8 인코딩 명시적 사용
 - 모든 콘텐츠를 한국어로 작성
 - `file` 명령으로 인코딩 검증 (UTF-8 텍스트로 표시되어야 함)
+
+---
+
+### 13. task-generator
+
+- **컬렉션**: 프로젝트
+- **모델**: Sonnet
+- **목적**: PRD(제품 요구사항 문서)를 분석하여 개발자가 따라갈 수 있는 상세한 태스크 목록을 생성하는 전문가
+
+**사용 시기:**
+- PRD 문서를 실행 가능한 개발 태스크로 변환해야 할 때
+- 복잡한 기능을 관리 가능한 작업 단위로 분해해야 할 때
+- 개발팀에게 명확한 작업 지침을 제공해야 할 때
+- 프로젝트 계획 및 스프린트 준비가 필요할 때
+- PRD 작성 후 구현 전 단계에서
+
+**주요 기능:**
+- PRD 문서 철저 분석 (기능 요구사항, 사용자 스토리, 기술 명세)
+- 상위 태스크 생성 (3-5개의 논리적 작업 단위)
+- 사용자 확인 후 하위 태스크 생성 (2단계 확인 프로세스)
+- 각 태스크를 실행 가능하고 측정 가능한 단위로 분해
+- 관련 파일 식별 (생성/수정될 파일 목록)
+- 태스크 간 종속성 및 순서 고려
+- `/tasks/` 폴더에 체크박스 형식의 태스크 목록 저장 (`tasks-[prd-파일명].md`)
+- 개발 에이전트와의 협업 프로토콜 (backend-senior-developer, frontend-senior-developer 등)
+
+**태스크 생성 프로세스:**
+1. PRD 참조 수신
+2. PRD 분석 (요구사항, 스토리, 기술 사양)
+3. 상위 태스크 생성 (3-5개)
+4. 사용자 확인 대기 ("Go" 응답)
+5. 하위 태스크 생성 (상위 태스크를 더 작은 단위로 분해)
+6. 관련 파일 식별
+7. 최종 태스크 목록 저장
+
+**태스크 분해 기준:**
+- **상위 태스크**: 독립적, 완결성, 3-5개 적정, 순서 고려
+- **하위 태스크**: 실행 가능성, 측정 가능성, 2-8시간 크기, 논리적 연결
+
+**사용 예시:**
+```
+사용자: "prd-user-profile-editing.md를 기반으로 태스크 목록을 생성해주세요"
+어시스턴트: "task-generator 에이전트를 사용하여 PRD를 분석하고
+개발자가 바로 작업할 수 있는 상세한 태스크 목록을 생성하겠습니다."
+```
+
+**출력 형식:**
+```markdown
+# [기능명] 태스크 목록
+
+## 관련 파일
+- 파일 경로 및 설명
+
+## 태스크
+- [ ] 1.0 상위 태스크 제목
+  - [ ] 1.1 하위 태스크 설명
+  - [ ] 1.2 하위 태스크 설명
+- [ ] 2.0 상위 태스크 제목
+  - [ ] 2.1 하위 태스크 설명
+```
+
+**에이전트 협업:**
+- **백엔드 태스크** → @agent-backend-senior-developer
+- **프론트엔드 태스크** → @agent-frontend-senior-developer
+- **인프라 태스크** → @agent-infra-architect
+- **테스트 태스크** → @agent-test-scenario-architect
+
+---
+
+### 14. senior-marketer
+
+- **컬렉션**: 프로젝트
+- **모델**: Sonnet
+- **목적**: 프로젝트 성격을 파악하고 단계별 마케팅 전략을 수립하는 시니어 마케터
+
+**사용 시기:**
+- 새 프로젝트나 제품 출시를 준비할 때
+- 마케팅 전략 수립이 필요할 때
+- 기존 마케팅 채널 최적화가 필요할 때
+- 유료 광고 전략 수립이 필요할 때
+- 프로젝트 단계별 마케팅 로드맵이 필요할 때
+
+**주요 기능:**
+- 프로젝트 성격 및 타겟 시장 분석
+- 단계별 마케팅 전략 수립 (프로젝트 오픈부터 성장 단계까지)
+- 기존 마케팅 리소스 활용 전략 (네이버 블로그, 티스토리, twms.in, lifemap.github.io)
+- 신규 마케팅 채널 제안 (필요 시)
+- 유료 광고 최적화 전략 (ROI 중심)
+- 보수적이고 현실적인 마케팅 접근법
+- `/docs/marketing/` 폴더에 마케팅 전략 문서화 (`marketing-strategy.md`)
+
+**마케팅 채널:**
+- **기존 리소스**: 네이버 블로그, 티스토리, https://www.twms.in, https://lifemap.github.io
+- **신규 채널**: 프로젝트 특성에 맞는 SNS, 커뮤니티, 유료 광고 등
+
+**전략 수립 원칙:**
+- 최대한 보수적인 접근
+- 유료 광고 필요 시 최적화 우선 고려
+- 기존 리소스 최대한 활용
+- 단계별 명확한 목표 설정
+- 비용 대비 효과(ROI) 중심 사고
+
+**사용 예시:**
+```
+사용자: "새로운 SaaS 제품을 출시하려고 합니다. 마케팅 전략을 세워주세요"
+어시스턴트: "senior-marketer 에이전트를 사용하여 프로젝트 성격을 분석하고
+단계별 마케팅 전략을 수립하겠습니다."
+```
+
+---
+
+### 15. brand-identity-designer
+
+- **컬렉션**: 프로젝트
+- **모델**: Sonnet
+- **목적**: 시각적 브랜드 아이덴티티 시스템을 만들거나 개선하는 15년 경력의 브랜드 아이덴티티 디자이너
+
+**사용 시기:**
+- 새로운 브랜드 아이덴티티가 필요할 때
+- 로고 디자인 및 브랜딩 가이드라인이 필요할 때
+- 색상 팔레트 및 타이포그래피 시스템 개발이 필요할 때
+- 브랜드 시각 스타일 가이드가 필요할 때
+- 디자인 시스템 구축이 필요할 때
+- 기존 브랜드 아이덴티티 개선이 필요할 때
+
+**주요 기능:**
+- 포괄적 브랜드 아이덴티티 시스템 개발 (로고, 색상, 타이포그래피, 시각 요소, 브랜드 적용)
+- 로고 디자인 방향 제시 (3-5개 컨셉, 변형, 사용 가이드라인)
+- 전략적 색상 시스템 디자인 (주요/보조/중립/기능 색상, 접근성 고려)
+- 계층적 타이포그래피 시스템 (폰트 선택, 스케일, 조합 규칙)
+- 시각 스타일 가이드라인 (아이콘, 사진, 일러스트레이션 스타일)
+- 프론트엔드를 위한 디자인 시스템 (CSS 변수, Tailwind 설정)
+- `/docs/brand/identity/` 폴더에 브랜드 아이덴티티 문서화 (한국어)
+- 에이전트 협업: brand-messaging-strategist, ux-design-advisor, frontend-senior-developer
+
+**브랜드 아이덴티티 구성요소:**
+- **로고 시스템**: 기본 로고, 변형, 여백, 최소 크기
+- **색상 팔레트**: 주요/보조/중립/기능 색상, WCAG 접근성 준수
+- **타이포그래피**: 헤드라인/본문 폰트, 타이포그래피 스케일
+- **시각 요소**: 아이콘, 사진, 일러스트레이션 스타일
+- **브랜드 적용**: 디지털/인쇄물 가이드라인
+
+**사용 예시:**
+```
+사용자: "새로운 기술 스타트업을 위한 브랜드 아이덴티티를 만들어주세요"
+어시스턴트: "brand-identity-designer 에이전트를 사용하여 로고 컨셉부터
+색상 시스템, 타이포그래피, 시각 스타일까지 포괄적인 브랜드 아이덴티티를 개발하겠습니다."
+```
+
+**문서 저장:**
+- `/docs/brand/identity/brand-identity-guide.md` (한국어)
+- `/docs/brand/identity/logos/` (SVG, PNG 파일)
+- `/docs/brand/identity/color-system.md` (한국어)
+- `/docs/brand/identity/typography-guide.md` (한국어)
+- `/docs/brand/design-system/design-system.md` (한국어)
+
+---
+
+### 16. brand-messaging-strategist
+
+- **컬렉션**: 프로젝트
+- **모델**: Sonnet
+- **목적**: 설득력 있는 브랜드 스토리와 포지셔닝 전략을 수립하는 15년 경력의 브랜드 메시징 전략가
+
+**사용 시기:**
+- 브랜드 포지셔닝을 정의해야 할 때
+- 브랜드 메시징 프레임워크가 필요할 때
+- 미션, 비전, 가치를 명확히 해야 할 때
+- 브랜드 보이스 및 톤 가이드가 필요할 때
+- 가치 제안을 개발해야 할 때
+- 타겟 오디언스별 메시징이 필요할 때
+- 경쟁사 대비 메시징 차별화가 필요할 때
+
+**주요 기능:**
+- 브랜드 포지셔닝 개발 (타겟 오디언스, 시장 카테고리, 차별점, 믿을 만한 이유)
+- 브랜드 메시징 프레임워크 (브랜드 본질, 약속, 기둥, 증거 포인트)
+- 미션, 비전, 가치 명시 (구체적 템플릿 및 예시 제공)
+- 브랜드 보이스 및 톤 정의 (보이스 속성, 컨텍스트별 톤 조정, 작성 스타일 가이드라인)
+- 가치 제안 개발 (가치 제안 캔버스, 가치 제안 선언문)
+- 타겟 오디언스 메시징 (세그먼트별 맞춤형 메시지, 채널별 메시징)
+- 경쟁 메시징 차별화 (경쟁 매트릭스, 메시징 전략)
+- 엘리베이터 피치 및 태그라인 개발
+- `/docs/brand/messaging/` 폴더에 메시징 문서화 (한국어)
+- 에이전트 협업: brand-identity-designer, ux-design-advisor, product-requirements-analyst
+
+**브랜드 메시징 구성요소:**
+- **브랜드 포지셔닝**: 포지셔닝 선언문
+- **메시징 프레임워크**: 브랜드 본질 → 약속 → 기둥 → 증거 포인트
+- **미션/비전/가치**: 명확한 목적과 원칙
+- **보이스 및 톤**: 보이스 속성, 작성 스타일, 톤 조정
+- **가치 제안**: 고객 프로필, 가치 맵, 가치 제안 선언문
+- **오디언스 메시징**: 세그먼트별 전략, 채널별 메시징
+
+**사용 예시:**
+```
+사용자: "우리 브랜드의 메시징 전략을 수립해주세요"
+어시스턴트: "brand-messaging-strategist 에이전트를 사용하여 브랜드 포지셔닝부터
+메시징 프레임워크, 보이스 가이드까지 포괄적인 브랜드 메시징 전략을 개발하겠습니다."
+```
+
+**문서 저장:**
+- `/docs/brand/messaging/brand-positioning.md` (한국어)
+- `/docs/brand/messaging/messaging-framework.md` (한국어)
+- `/docs/brand/messaging/voice-and-tone-guide.md` (한국어)
+- `/docs/brand/messaging/value-propositions.md` (한국어)
+- `/docs/brand/messaging/audiences/[segment-name]-messaging.md` (한국어)
 
 ---
 
@@ -524,23 +730,27 @@ API/데이터베이스 디자인을 조율하며, Socket.IO로 백엔드를 구�
 ```
 1. product-requirements-analyst로 PRD 작성
    ↓
-2. ux-design-advisor로 UI/UX 설계 검토
+2. task-generator로 PRD를 실행 가능한 태스크로 분해
    ↓
-3. backend-senior-developer로 백엔드 아키텍처 설계 및 구현
+3. ux-design-advisor로 UI/UX 설계 검토
+   ↓
+4. backend-senior-developer로 백엔드 아키텍처 설계 및 구현
    (내부적으로 restful-api-architect, senior-dba-advisor, infra-architect와 협업)
    ↓
-4. frontend-senior-developer로 프론트엔드 아키텍처 설계 및 구현
+5. frontend-senior-developer로 프론트엔드 아키텍처 설계 및 구현
    (내부적으로 ux-design-advisor, restful-api-architect와 협업)
    ↓
-5. senior-code-reviewer로 코드 품질 검토
+6. senior-code-reviewer로 코드 품질 검토
    ↓
-6. test-scenario-architect로 종합 테스트 시나리오 생성
+7. test-scenario-architect로 종합 테스트 시나리오 생성
    ↓
-7. test-executor로 테스트 자동 실행
+8. test-executor로 테스트 자동 실행
    ↓
-8. senior-debugger로 발견된 문제 해결
+9. senior-debugger로 발견된 문제 해결
    ↓
-9. subagent-registry-manager로 새 에이전트 추가 시 문서 업데이트
+10. senior-marketer로 마케팅 전략 수립
+    ↓
+11. subagent-registry-manager로 새 에이전트 추가 시 문서 업데이트
 ```
 
 ### 2. 백엔드 개발 워크플로우
@@ -548,16 +758,18 @@ API/데이터베이스 디자인을 조율하며, Socket.IO로 백엔드를 구�
 ```
 1. product-requirements-analyst로 백엔드 요구사항 분석
    ↓
-2. backend-senior-developer로 백엔드 설계 및 구현
+2. task-generator로 백엔드 태스크 생성
+   ↓
+3. backend-senior-developer로 백엔드 설계 및 구현
    (내부적으로 필요 시 infra-architect, restful-api-architect, senior-dba-advisor 자동 조율)
    ↓
-3. senior-code-reviewer로 보안 및 성능 검토
+4. senior-code-reviewer로 보안 및 성능 검토
    ↓
-4. test-scenario-architect로 API 테스트 시나리오 생성
+5. test-scenario-architect로 API 테스트 시나리오 생성
    ↓
-5. test-executor로 테스트 자동 실행
+6. test-executor로 테스트 자동 실행
    ↓
-6. senior-debugger로 발견된 문제 해결
+7. senior-debugger로 발견된 문제 해결
 ```
 
 ### 3. 프론트엔드 개발 워크플로우
@@ -565,19 +777,35 @@ API/데이터베이스 디자인을 조율하며, Socket.IO로 백엔드를 구�
 ```
 1. product-requirements-analyst로 프론트엔드 요구사항 분석
    ↓
-2. frontend-senior-developer로 React 아키텍처 설계 및 구현
+2. task-generator로 프론트엔드 태스크 생성
+   ↓
+3. frontend-senior-developer로 React 아키텍처 설계 및 구현
    (내부적으로 필요 시 ux-design-advisor, restful-api-architect 자동 조율)
    ↓
-3. senior-code-reviewer로 코드 품질 및 성능 검토
+4. senior-code-reviewer로 코드 품질 및 성능 검토
    ↓
-4. test-scenario-architect로 컴포넌트 및 E2E 테스트 시나리오 생성
+5. test-scenario-architect로 컴포넌트 및 E2E 테스트 시나리오 생성
    ↓
-5. test-executor로 테스트 자동 실행
+6. test-executor로 테스트 자동 실행
    ↓
-6. senior-debugger로 발견된 문제 해결
+7. senior-debugger로 발견된 문제 해결
 ```
 
-### 4. 인프라 구축 워크플로우
+### 4. 브랜딩 및 마케팅 워크플로우
+
+```
+1. brand-messaging-strategist로 브랜드 메시징 전략 수립
+   ↓
+2. brand-identity-designer로 시각적 브랜드 아이덴티티 개발
+   ↓
+3. ux-design-advisor로 UI에 브랜드 아이덴티티 통합
+   ↓
+4. frontend-senior-developer로 디자인 시스템 구현
+   ↓
+5. senior-marketer로 마케팅 전략 및 실행 계획 수립
+```
+
+### 5. 인프라 구축 워크플로우
 
 ```
 1. backend-senior-developer 또는 infra-architect로 인프라 요구사항 분석 및 설계
@@ -595,24 +823,28 @@ API/데이터베이스 디자인을 조율하며, Socket.IO로 백엔드를 구�
 
 ### 언제 각 에이전트를 사용해야 하는가?
 
-- **기획/분석 단계**: product-requirements-analyst
+- **기획/분석 단계**: product-requirements-analyst, task-generator
+- **브랜딩 단계**: brand-messaging-strategist, brand-identity-designer
 - **설계 단계**: backend-senior-developer, frontend-senior-developer, restful-api-architect, ux-design-advisor, infra-architect
 - **데이터베이스 관련**: senior-dba-advisor
 - **구현 단계**: backend-senior-developer, frontend-senior-developer
 - **코드 리뷰 단계**: senior-code-reviewer
 - **테스트 단계**: test-scenario-architect, test-executor
 - **디버깅 단계**: senior-debugger
+- **마케팅 단계**: senior-marketer
 - **문서화 유지**: subagent-registry-manager
 
 ### 에이전트 간 협업
 
 여러 에이전트가 순차적으로 또는 자동으로 조율되어 작업할 수 있습니다:
 
-- 기획 단계: **product-requirements-analyst** → **ux-design-advisor** 협업
-- 백엔드 개발: **backend-senior-developer**가 내부적으로 **infra-architect**, **restful-api-architect**, **senior-dba-advisor** 자동 조율
-- 프론트엔드 개발: **frontend-senior-developer**가 내부적으로 **ux-design-advisor**, **restful-api-architect** 자동 조율
-- 코드 품질: **senior-code-reviewer** → 피드백 반영 → 재검토
-- 테스트: **test-scenario-architect** → **test-executor** → **senior-debugger** 순차 실행
+- **기획 단계**: product-requirements-analyst → task-generator → 개발 에이전트
+- **브랜딩 단계**: brand-messaging-strategist → brand-identity-designer → ux-design-advisor
+- **백엔드 개발**: backend-senior-developer가 내부적으로 infra-architect, restful-api-architect, senior-dba-advisor 자동 조율
+- **프론트엔드 개발**: frontend-senior-developer가 내부적으로 ux-design-advisor, restful-api-architect 자동 조율
+- **코드 품질**: senior-code-reviewer → 피드백 반영 → 재검토
+- **테스트**: test-scenario-architect → test-executor → senior-debugger 순차 실행
+- **마케팅**: brand-messaging-strategist → brand-identity-designer → senior-marketer
 
 ---
 
@@ -628,12 +860,16 @@ API/데이터베이스 디자인을 조율하며, Socket.IO로 백엔드를 구�
 - `/docs/test-scenario/` - 테스트 시나리오 (test-scenario-architect)
 - `/docs/test-results/` - 테스트 결과 (test-executor)
 - `/docs/debug/` - 디버그 로그 (senior-debugger)
+- `/docs/brand/messaging/` - 브랜드 메시징 문서 (brand-messaging-strategist)
+- `/docs/brand/identity/` - 브랜드 아이덴티티 문서 (brand-identity-designer)
+- `/docs/marketing/` - 마케팅 전략 문서 (senior-marketer)
+- `/tasks/` - 태스크 목록 (task-generator)
 
 ---
 
 ## 총 활성 에이전트
 
-**전체**: 12개 (프로젝트: 12개, 개인: 0개)
+**전체**: 16개 (프로젝트: 16개, 개인: 0개)
 
 ---
 

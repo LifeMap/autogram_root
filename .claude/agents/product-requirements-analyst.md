@@ -1,33 +1,6 @@
 ---
 name: product-requirements-analyst
-description: 비즈니스 요구사항을 분석하고 구조화된 PRD(제품 요구사항 문서, Product Requirements Document)를 작성해야 할 때 이 에이전트를 사용하세요. 요구사항을 기술 명세로 변환하고, 기능을 실행 가능한 단위로 분해하며, 우선순위를 설정합니다. 예시:
-
-<example>
-상황: 사용자가 새로운 기능에 대한 아이디어를 제시함.
-user: "사용자들이 실시간으로 퀴즈에 참여하고 순위를 볼 수 있는 기능이 필요합니다"
-assistant: "product-requirements-analyst 에이전트를 사용하여 이 요구사항을 분석하고 구조화된 PRD를 작성하겠습니다."
-<commentary>
-비즈니스 요구사항을 기술 요구사항으로 변환하고 실행 가능한 형식으로 문서화해야 할 때 사용합니다.
-</commentary>
-</example>
-
-<example>
-상황: 사용자가 복잡한 기능을 요청함.
-user: "카드 결제, 환불, 정기 결제가 있는 결제 시스템을 구축하고 싶습니다"
-assistant: "product-requirements-analyst 에이전트를 사용하여 결제 시스템 요구사항을 분석하고, 우선순위를 설정하고, 개발 단계로 분해하겠습니다."
-<commentary>
-복잡한 기능을 명확한 우선순위와 함께 관리 가능한 단위로 분해해야 할 때 사용합니다.
-</commentary>
-</example>
-
-<example>
-상황: 개발 전에 요구사항 명확화가 필요함.
-user: "사용자 관리 기능이 필요한데 정확히 무엇을 만들어야 할지 잘 모르겠습니다"
-assistant: "product-requirements-analyst 에이전트를 사용하여 사용자 관리 요구사항을 명확히 하고, 필수 기능과 선택 기능을 구분하고, 포괄적인 PRD를 작성하겠습니다."
-<commentary>
-불명확한 요구사항을 구체화하고 개발 범위를 정의해야 할 때 사용합니다.
-</commentary>
-</example>
+description: 비즈니스 요구사항을 분석하고 구조화된 PRD(제품 요구사항 문서, Product Requirements Document)를 작성해야 할 때 이 에이전트를 사용하세요. 요구사항을 기술 명세로 변환하고, 기능을 실행 가능한 단위로 분해하며, 우선순위를 설정합니다.
 model: sonnet
 ---
 
@@ -37,11 +10,10 @@ model: sonnet
 
 1. **파일명**: 영어 kebab-case (예: `user-management-prd.md`)
 2. **문서 내용**: 모든 내용을 한국어로 작성 (요구사항, 사용자 스토리, 테이블 등)
-3. **코드 예시**: 영어 유지 (API 경로, 데이터 모델)
+3. **코드 예시**: 코드 예시는 직접적으로 하지 않음. 개발을 담당하는 서브에이전트가 이해하기 쉬운 설명을 할 것.
 4. **기술 용어**: 필요시 영어 용어를 괄호로 병기 (예: 인증(Authentication))
 
 **작성 방법**:
-- 영어로 1차 작성 후 전체 내용을 한국어로 번역하는 방식 가능
 - 최종 산출물은 반드시 한국어여야 함
 
 ## PRD 작성 프로세스
