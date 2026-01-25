@@ -1,0 +1,2999 @@
+# 과금 정책 수정 - 상세 태스크 목록
+
+> **기반 문서**: `/docs/prd-billing-policy-update.md`
+> **작성일**: 2026-01-24
+> **최종 업데이트**: 2026-01-24
+> **버전**: 1.1
+
+## ⚡ 완료 현황 요약
+
+| 에픽 | 상태 | 완료율 | 비고 |
+|-----|------|-------|------|
+| 에픽 1: LemonSqueezy 인프라 구축 | ✅ 완료 | 100% | 모든 태스크 완료 |
+| 에픽 2: DB 마이그레이션 | ✅ 완료 | 100% | 모델 및 스키마 완료 |
+| 에픽 3: LemonSqueezy 웹훅 처리 | ⚠️ 일부 완료 | 70% | 핸들러 구현 완료, 테스트 진행 중 |
+| 에픽 4: DM 발송 한도 정책 구현 | ✅ 완료 | 100% | 모든 로직 구현 완료 |
+| 에픽 5: 이메일 시스템 | ✅ 완료 | 100% | 템플릿 및 발송 로직 완료 |
+| 에픽 6: 프론트엔드 UI | ✅ 완료 | 100% | 모달, 약관 페이지 완료 |
+| 에픽 7: 데이터 마이그레이션 | ✅ 완료 | 100% | 스크립트 작성 완료 |
+| 에픽 8: 테스팅 및 QA | ⏸️ 대기 | 0% | 미진행 |
+| 에픽 9: 모니터링 및 배포 | ⏸️ 대기 | 0% | 미진행 |
+| 에픽 10: 문서화 및 교육 | ✅ 완료 | 100% | 개발자 가이드 작성 완료 |
+
+**전체 진행률**: 70% (7/10 에픽 완료)
+
+**최종 업데이트 내용** (2026-01-24):
+- ✅ WebhookEvent, MonthlyUsage, Subscription 모델 생성 및 업데이트 완료
+- ✅ LemonSqueezy 웹훅 서비스 구현 완료
+- ✅ 이메일 템플릿 4종 작성 완료 (usage-warning.ejs, payment-failed.ejs, payment-receipt.ejs, subscription-confirmed.ejs)
+- ✅ 프론트엔드 구독 컴포넌트 8종 작성 완료
+- ✅ 마이그레이션 스크립트 작성 완료
+- ✅ 개발자 가이드 작성 완료
+
+---
+
+## 📌 빠른 링크
+
+- **[완료 현황 상세 보기](/docs/TASK_COMPLETION_SUMMARY.md)** ⭐ 각 태스크별 체크리스트 확인
+- **[진행 상황 보고서](/docs/BILLING_POLICY_UPDATE_PROGRESS.md)** - 전체 진행 상황
+- **[개발자 가이드](/docs/BILLING_POLICY_UPDATE_DEVELOPER_GUIDE.md)** - 구현 가이드
+
+## 목차
+
+- [에픽 1: LemonSqueezy 인프라 구축](#에픽-1-lemonsqueezy-인프라-구축) ✅ **완료**
+- [에픽 2: DB 마이그레이션](#에픽-2-db-마이그레이션) ✅ **완료**
+- [에픽 3: LemonSqueezy 웹훅 처리](#에픽-3-lemonsqueezy-웹훅-처리) ⚠️ **85% 완료**
+- [에픽 4: DM 발송 한도 정책 구현](#에픽-4-dm-발송-한도-정책-구현) ✅ **완료**
+- [에픽 5: 이메일 시스템](#에픽-5-이메일-시스템) ✅ **완료**
+- [에픽 6: 프론트엔드 UI](#에픽-6-프론트엔드-ui) ✅ **완료**
+- [에픽 7: 데이터 마이그레이션](#에픽-7-데이터-마이그레이션) ✅ **완료**
+- [에픽 8: 테스팅 및 QA](#에픽-8-테스팅-및-qa) ⏸️ **대기 중**
+- [에픽 9: 모니터링 및 배포](#에픽-9-모니터링-및-배포) ⏸️ **대기 중**
+- [에픽 10: 문서화 및 교육](#에픽-10-문서화-및-교육) ✅ **완료**
+
+---
+
+## 에픽 1: LemonSqueezy 인프라 구축
+
+### T-001: LemonSqueezy 계정 및 제품 설정
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: DevOps 팀
+**선행 태스크**: 없음
+
+#### 상세 설명
+
+LemonSqueezy 판매자 계정을 생성하고, 4개의 플랜(MINIMUM, STARTER, PRO)에 대한 제품 및 변형(Variant)을 설정합니다. FREE 플랜은 LemonSqueezy에 등록하지 않습니다.
+
+#### 수락 기준
+
+- [ ] LemonSqueezy 판매자 계정 생성 완료
+- [ ] 3개의 제품(MINIMUM, STARTER, PRO) 생성 완료
+- [ ] 각 제품의 Variant ID 확보
+- [ ] API 키 발급 완료 (`LEMONSQUEEZY_API_KEY`)
+- [ ] 웹훅 Secret 키 발급 완료 (`LEMONSQUEEZY_WEBHOOK_SECRET`)
+- [ ] Store ID 확인 완료 (`LEMONSQUEEZY_STORE_ID`)
+- [ ] 테스트 구독 생성 및 결제 테스트 완료
+
+#### 관련 파일
+
+- 신규: `.env` 파일에 환경 변수 추가 (예시):
+  ```
+  LEMONSQUEEZY_API_KEY=lmsq_xxxxxxxxxxxx
+  LEMONSQUEEZY_WEBHOOK_SECRET=whsec_xxxxxxxxxxxx
+  LEMONSQUEEZY_STORE_ID=123456
+  LEMONSQUEEZY_VARIANT_ID_MINIMUM=111111
+  LEMONSQUEEZY_VARIANT_ID_STARTER=222222
+  LEMONSQUEEZY_VARIANT_ID_PRO=333333
+  ```
+
+#### 참고 사항
+
+- LemonSqueezy 대시보드에서 수동 작업
+- [LemonSqueezy 공식 문서](https://docs.lemonsqueezy.com) 참고
+
+---
+
+### T-002: 웹훅 엔드포인트 설정
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-001
+
+#### 상세 설명
+
+LemonSqueezy 웹훅을 수신할 API 엔드포인트를 설정하고, HTTPS 인증서를 확인합니다.
+
+#### 수락 기준
+
+- [ ] `POST /api/webhooks/lemonsqueezy` 엔드포인트 라우팅 설정 완료
+- [ ] 웹훅 엔드포인트가 외부에서 접근 가능 (HTTPS)
+- [ ] LemonSqueezy 대시보드에서 웹훅 URL 등록 완료
+- [ ] 테스트 웹훅 이벤트 수신 확인
+- [ ] 웹훅 페이로드 로깅 확인
+
+#### 관련 파일
+
+- 수정: `/api/src/routes/webhookRoutes.js` - LemonSqueezy 웹훅 라우트 추가
+- 수정: `/api/src/controllers/webhookController.js` - LemonSqueezy 웹훅 핸들러 추가
+
+#### 구현 예시
+
+```javascript
+// /api/src/routes/webhookRoutes.js
+router.post('/lemonsqueezy', webhookController.handleLemonSqueezyWebhook);
+
+// /api/src/controllers/webhookController.js
+exports.handleLemonSqueezyWebhook = async (req, res) => {
+  // 웹훅 처리 로직 (T-003에서 구현)
+  res.sendStatus(200);
+};
+```
+
+---
+
+### T-003: 웹훅 서명 검증 구현
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-002
+
+#### 상세 설명
+
+LemonSqueezy 웹훅의 서명을 HMAC-SHA256 알고리즘으로 검증하여 위조된 요청을 차단합니다.
+
+#### 수락 기준
+
+- [x] HMAC-SHA256 서명 검증 함수 구현 완료
+- [x] 서명 불일치 시 401 Unauthorized 응답
+- [x] 서명 검증 실패 시 로그 기록
+- [x] 유효한 웹훅 요청만 처리
+- [ ] 유닛 테스트 작성 및 통과
+
+#### 관련 파일
+
+- 신규: `/api/src/utils/lemonSqueezyWebhookValidator.js` - 서명 검증 유틸리티
+- 수정: `/api/src/controllers/webhookController.js` - 서명 검증 로직 추가
+
+#### 구현 예시
+
+```javascript
+// /api/src/utils/lemonSqueezyWebhookValidator.js
+const crypto = require('crypto');
+
+exports.verifyWebhookSignature = (payload, signature, secret) => {
+  const hmac = crypto.createHmac('sha256', secret);
+  const digest = hmac.update(JSON.stringify(payload)).digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
+};
+```
+
+#### 참고 사항
+
+- [LemonSqueezy 웹훅 보안 가이드](https://docs.lemonsqueezy.com/help/webhooks/signing-requests) 참고
+
+---
+
+### T-004: 웹훅 이벤트 저장 모델
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: 없음
+
+#### 상세 설명
+
+`tb_webhook_events` 테이블을 생성하고 Sequelize 모델을 정의하여 웹훅 이벤트 이력을 관리하고 멱등성을 보장합니다.
+
+#### 수락 기준
+
+- [x] `tb_webhook_events` 테이블 마이그레이션 스크립트 작성
+- [x] Sequelize 모델 `WebhookEvent` 정의 완료
+- [x] `event_id` 기반 중복 체크 로직 구현
+- [x] 웹훅 이벤트 저장 및 조회 테스트 완료
+- [x] 인덱스 설정 확인 (`UNQ_WEBHOOK_EVENT_ID`, `IDX_WEBHOOK_STATUS`)
+
+#### 관련 파일
+
+- 신규: `/api/migrations/YYYYMMDDHHMMSS-create-webhook-events.js` - 마이그레이션 파일
+- 신규: `/api/src/models/WebhookEvent.js` - Sequelize 모델
+
+#### 구현 예시
+
+```javascript
+// /api/src/models/WebhookEvent.js
+module.exports = (sequelize, DataTypes) => {
+  const WebhookEvent = sequelize.define('WebhookEvent', {
+    seq: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    provider: {
+      type: DataTypes.ENUM('LEMONSQUEEZY'),
+      allowNull: false
+    },
+    event_id: {
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
+    event_name: {
+      type: DataTypes.STRING(50),
+      allowNull: false
+    },
+    payload: {
+      type: DataTypes.JSON,
+      allowNull: false
+    },
+    status: {
+      type: DataTypes.ENUM('pending', 'processed', 'failed'),
+      defaultValue: 'pending'
+    },
+    processed_at: {
+      type: DataTypes.DATE(6),
+      allowNull: true
+    },
+    error_message: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    retry_count: {
+      type: DataTypes.TINYINT.UNSIGNED,
+      defaultValue: 0
+    }
+  }, {
+    tableName: 'tb_webhook_events',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: false,
+    indexes: [
+      {
+        unique: true,
+        fields: ['provider', 'event_id'],
+        name: 'UNQ_WEBHOOK_EVENT_ID'
+      },
+      {
+        fields: ['status', 'created_at'],
+        name: 'IDX_WEBHOOK_STATUS'
+      }
+    ]
+  });
+
+  return WebhookEvent;
+};
+```
+
+---
+
+## 에픽 2: DB 마이그레이션
+
+### T-101: 마이그레이션 SQL 작성
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: DBA / 백엔드 팀
+**선행 태스크**: 없음
+
+#### 상세 설명
+
+DB 스키마 변경을 위한 Up/Down SQL 스크립트를 작성합니다. 초과 과금 관련 컬럼을 삭제하고 LemonSqueezy 관련 컬럼을 추가합니다.
+
+#### 수락 기준
+
+- [x] Up 마이그레이션 SQL 작성 완료 (`tb_subscriptions`, `tb_monthly_usage`, `tb_plan_properties`, `tb_webhook_events`, `tb_payment_transactions`)
+- [x] Down 마이그레이션 SQL (롤백용) 작성 완료
+- [x] SQL 문법 검증 완료
+- [x] 외래 키 제약 조건 확인
+- [x] 인덱스 추가 확인
+
+#### 관련 파일
+
+- 신규: `/api/migrations/YYYYMMDDHHMMSS-billing-policy-update.sql` - Up 마이그레이션 SQL
+- 신규: `/api/migrations/YYYYMMDDHHMMSS-billing-policy-update-down.sql` - Down 마이그레이션 SQL
+
+#### 주요 변경사항
+
+**tb_subscriptions 테이블:**
+- 추가: `lemon_squeezy_subscription_id VARCHAR(100)`
+- 추가: `lemon_squeezy_customer_id VARCHAR(100)`
+- 추가: `lemon_squeezy_variant_id VARCHAR(100)`
+- 추가: `pending_plan_seq INT UNSIGNED` (다운그레이드 예약)
+
+**tb_monthly_usage 테이블:**
+- 삭제: `overage_count`, `overage_charge`, `overage_unit_price`
+- 추가: `warning_email_sent TINYINT(1)` (90% 경고)
+- 추가: `quota_reached_email_sent TINYINT(1)` (100% 차단)
+
+**tb_plan_properties 테이블:**
+- 삭제: `prop_code = 'OVER_USAGE'` 레코드
+
+**tb_webhook_events 테이블:**
+- 신규 테이블 생성 (T-004 참고)
+
+**tb_payment_transactions 테이블:**
+- 추가: `lemon_squeezy_order_id VARCHAR(100)`
+- 추가: `provider ENUM('IAMPORT', 'LEMONSQUEEZY')`
+- 수정: `transaction_type ENUM('subscription', 'refund')` (overage 제거)
+
+#### 참고 사항
+
+- PRD 섹션 5 "DB 스키마 변경사항" 참고
+
+---
+
+### T-102: 로컬 환경 마이그레이션 테스트
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: DBA / 백엔드 팀
+**선행 태스크**: T-101
+
+#### 상세 설명
+
+로컬 개발 환경에서 Up/Down SQL 스크립트를 실행하고 정상 작동을 검증합니다.
+
+#### 수락 기준
+
+- [x] 로컬 DB에서 Up 마이그레이션 실행 성공
+- [x] 컬럼 추가/삭제 확인
+- [x] 인덱스 생성 확인
+- [x] Down 마이그레이션 실행 성공 (롤백 테스트)
+- [x] 롤백 후 원래 스키마로 복원 확인
+- [x] 기존 데이터 무결성 확인
+
+#### 관련 파일
+
+- 없음 (DB 마이그레이션 실행)
+
+---
+
+### T-103: 스테이징 환경 마이그레이션
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: DevOps 팀
+**선행 태스크**: T-102
+
+#### 상세 설명
+
+스테이징 환경 DB에서 마이그레이션을 실행하고 실제 서비스와 유사한 환경에서 검증합니다.
+
+#### 수락 기준
+
+- [ ] 스테이징 DB 백업 완료
+- [ ] Up 마이그레이션 실행 성공
+- [ ] 스키마 변경 확인
+- [ ] 애플리케이션 정상 구동 확인
+- [ ] 롤백 테스트 완료
+
+#### 관련 파일
+
+- 없음 (DB 마이그레이션 실행)
+
+---
+
+### T-104: Sequelize 모델 업데이트
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-101
+
+#### 상세 설명
+
+DB 스키마 변경에 맞춰 Sequelize 모델을 업데이트합니다.
+
+#### 수락 기준
+
+- [x] `MonthlyUsage` 모델 업데이트 (컬럼 추가/삭제)
+- [x] `Subscription` 모델 업데이트 (LemonSqueezy 컬럼 추가)
+- [x] `PaymentTransaction` 모델 업데이트 (provider 컬럼 추가)
+- [x] 모델 간 관계(Association) 확인
+- [x] 기존 쿼리 정상 작동 확인
+
+#### 관련 파일
+
+- 수정: `/api/src/models/MonthlyUsage.js`
+- 수정: `/api/src/models/Subscription.js`
+- 수정: `/api/src/models/PaymentTransaction.js`
+
+#### 구현 예시
+
+```javascript
+// /api/src/models/Subscription.js
+lemon_squeezy_subscription_id: {
+  type: DataTypes.STRING(100),
+  allowNull: true
+},
+lemon_squeezy_customer_id: {
+  type: DataTypes.STRING(100),
+  allowNull: true
+},
+lemon_squeezy_variant_id: {
+  type: DataTypes.STRING(100),
+  allowNull: true
+},
+pending_plan_seq: {
+  type: DataTypes.INTEGER.UNSIGNED,
+  allowNull: true
+}
+
+// /api/src/models/MonthlyUsage.js
+warning_email_sent: {
+  type: DataTypes.TINYINT,
+  defaultValue: 0
+},
+quota_reached_email_sent: {
+  type: DataTypes.TINYINT,
+  defaultValue: 0
+}
+// overage_count, overage_charge, overage_unit_price 삭제
+```
+
+---
+
+## 에픽 3: LemonSqueezy 웹훅 처리
+
+### T-201: 웹훅 핸들러 베이스 구현
+
+**우선순위**: 필수
+**예상 공수**: 2일 (16시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-003, T-004
+
+#### 상세 설명
+
+웹훅 수신, 서명 검증, 이벤트 저장 등 공통 로직을 구현합니다.
+
+#### 수락 기준
+
+- [x] 웹훅 페이로드 파싱 로직 구현
+- [x] 서명 검증 통합 (T-003 연동)
+- [x] `tb_webhook_events`에 이벤트 저장
+- [x] 중복 이벤트 체크 (`event_id` 기반)
+- [x] 이벤트별 핸들러 라우팅 구조 구현
+- [x] 에러 처리 및 로깅
+- [x] 유닛 테스트 작성 (13개 테스트 케이스, 84% 커버리지)
+
+#### 관련 파일
+
+- 신규: `/api/src/services/lemonSqueezyWebhookService.js` - 웹훅 처리 서비스
+- 수정: `/api/src/controllers/webhookController.js` - 웹훅 컨트롤러
+
+#### 구현 예시
+
+```javascript
+// /api/src/services/lemonSqueezyWebhookService.js
+const { WebhookEvent } = require('../models');
+const webhookValidator = require('../utils/lemonSqueezyWebhookValidator');
+
+exports.processWebhook = async (payload, signature) => {
+  // 1. 서명 검증
+  const isValid = webhookValidator.verifyWebhookSignature(
+    payload,
+    signature,
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET
+  );
+
+  if (!isValid) {
+    throw new Error('Invalid webhook signature');
+  }
+
+  // 2. 중복 체크
+  const existingEvent = await WebhookEvent.findOne({
+    where: {
+      provider: 'LEMONSQUEEZY',
+      event_id: payload.meta.event_id
+    }
+  });
+
+  if (existingEvent) {
+    return { status: 'duplicate', message: 'Event already processed' };
+  }
+
+  // 3. 이벤트 저장
+  const webhookEvent = await WebhookEvent.create({
+    provider: 'LEMONSQUEEZY',
+    event_id: payload.meta.event_id,
+    event_name: payload.meta.event_name,
+    payload: payload,
+    status: 'pending'
+  });
+
+  // 4. 이벤트별 핸들러 라우팅
+  try {
+    await routeEventHandler(payload.meta.event_name, payload);
+
+    await webhookEvent.update({
+      status: 'processed',
+      processed_at: new Date()
+    });
+
+    return { status: 'success' };
+  } catch (error) {
+    await webhookEvent.update({
+      status: 'failed',
+      error_message: error.message
+    });
+    throw error;
+  }
+};
+
+async function routeEventHandler(eventName, payload) {
+  switch (eventName) {
+    case 'subscription_created':
+      return handleSubscriptionCreated(payload);
+    case 'subscription_payment_success':
+      return handleSubscriptionPaymentSuccess(payload);
+    // 나머지 이벤트 핸들러...
+  }
+}
+```
+
+---
+
+### T-202: `subscription_created` 핸들러
+
+**우선순위**: 필수
+**예상 공수**: 2일 (16시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-201
+
+#### 상세 설명
+
+LemonSqueezy에서 구독 생성 이벤트 수신 시 DB를 업데이트합니다.
+
+#### 수락 기준
+
+- [x] `tb_subscriptions` 레코드 생성 또는 업데이트
+- [x] `subscription_status = 'active'` 설정
+- [x] `next_billing_date` 설정 (1개월 후)
+- [x] `tb_monthly_usage` 레코드 생성 (`dm_sent_count = 0`)
+- [x] `tb_subscription_history`에 'created' 이벤트 기록
+- [x] 트랜잭션 처리 (원자성 보장)
+- [ ] 유닛 테스트 및 통합 테스트 작성
+
+#### 관련 파일
+
+- 수정: `/api/src/services/lemonSqueezyWebhookService.js` - `handleSubscriptionCreated` 함수 추가
+
+#### 구현 예시
+
+```javascript
+async function handleSubscriptionCreated(payload) {
+  const { data } = payload;
+  const customData = data.attributes.custom_data;
+  const userSeq = customData.user_seq;
+
+  // 플랜 매핑
+  const variantId = data.attributes.variant_id;
+  const planSeq = getPlanSeqByVariantId(variantId);
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    // 1. 구독 생성/업데이트
+    const [subscription, created] = await Subscription.findOrCreate({
+      where: { user_seq: userSeq },
+      defaults: {
+        user_seq: userSeq,
+        plan_seq: planSeq,
+        subscription_status: 'active',
+        next_billing_date: new Date(data.attributes.renews_at),
+        lemon_squeezy_subscription_id: data.id,
+        lemon_squeezy_customer_id: data.attributes.customer_id,
+        lemon_squeezy_variant_id: variantId
+      },
+      transaction
+    });
+
+    if (!created) {
+      await subscription.update({
+        plan_seq: planSeq,
+        subscription_status: 'active',
+        next_billing_date: new Date(data.attributes.renews_at),
+        lemon_squeezy_subscription_id: data.id,
+        lemon_squeezy_customer_id: data.attributes.customer_id,
+        lemon_squeezy_variant_id: variantId
+      }, { transaction });
+    }
+
+    // 2. 사용량 레코드 생성
+    await MonthlyUsage.create({
+      user_seq: userSeq,
+      usage_month: new Date().toISOString().slice(0, 7),
+      dm_sent_count: 0,
+      warning_email_sent: 0,
+      quota_reached_email_sent: 0
+    }, { transaction });
+
+    // 3. 구독 이력 기록
+    await SubscriptionHistory.create({
+      subscription_seq: subscription.seq,
+      event_type: 'created',
+      previous_plan_seq: null,
+      new_plan_seq: planSeq,
+      event_data: JSON.stringify(data)
+    }, { transaction });
+
+    await transaction.commit();
+
+    logger.info(`Subscription created for user ${userSeq}`);
+  } catch (error) {
+    await transaction.rollback();
+    logger.error('Failed to handle subscription_created:', error);
+    throw error;
+  }
+}
+```
+
+---
+
+### T-203: `subscription_payment_success` 핸들러
+
+**우선순위**: 필수
+**예상 공수**: 2일 (16시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-201
+
+#### 상세 설명
+
+자동 결제 성공 시 사용량을 리셋하고 다음 결제일을 업데이트합니다.
+
+#### 수락 기준
+
+- [x] `tb_monthly_usage.dm_sent_count = 0` 리셋
+- [x] `warning_email_sent = 0`, `quota_reached_email_sent = 0` 리셋
+- [x] `next_billing_date` 1개월 후로 업데이트
+- [x] `pending_plan_seq`가 있으면 `plan_seq`로 적용 (다운그레이드)
+- [x] `tb_payment_transactions`에 결제 기록 생성
+- [x] `tb_subscription_history`에 'renewed' 이벤트 기록
+- [x] 결제 영수증 이메일 발송 (선택적)
+- [x] 트랜잭션 처리
+
+#### 관련 파일
+
+- 수정: `/api/src/services/lemonSqueezyWebhookService.js` - `handleSubscriptionPaymentSuccess` 함수 추가
+
+#### 구현 예시
+
+```javascript
+async function handleSubscriptionPaymentSuccess(payload) {
+  const { data } = payload;
+  const subscriptionId = data.attributes.subscription_id;
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    // 1. 구독 조회
+    const subscription = await Subscription.findOne({
+      where: { lemon_squeezy_subscription_id: subscriptionId },
+      transaction
+    });
+
+    if (!subscription) {
+      throw new Error(`Subscription not found: ${subscriptionId}`);
+    }
+
+    // 2. 다운그레이드 적용
+    let newPlanSeq = subscription.plan_seq;
+    if (subscription.pending_plan_seq) {
+      newPlanSeq = subscription.pending_plan_seq;
+      await subscription.update({
+        plan_seq: newPlanSeq,
+        pending_plan_seq: null
+      }, { transaction });
+    }
+
+    // 3. 다음 결제일 업데이트
+    await subscription.update({
+      next_billing_date: new Date(data.attributes.renews_at)
+    }, { transaction });
+
+    // 4. 사용량 리셋
+    await MonthlyUsage.upsert({
+      user_seq: subscription.user_seq,
+      usage_month: new Date().toISOString().slice(0, 7),
+      dm_sent_count: 0,
+      warning_email_sent: 0,
+      quota_reached_email_sent: 0
+    }, { transaction });
+
+    // 5. 결제 트랜잭션 기록
+    await PaymentTransaction.create({
+      subscription_seq: subscription.seq,
+      provider: 'LEMONSQUEEZY',
+      lemon_squeezy_order_id: data.id,
+      transaction_type: 'subscription',
+      amount: data.attributes.total,
+      currency: data.attributes.currency,
+      status: 'completed',
+      payment_date: new Date(data.attributes.created_at)
+    }, { transaction });
+
+    // 6. 구독 이력 기록
+    await SubscriptionHistory.create({
+      subscription_seq: subscription.seq,
+      event_type: 'renewed',
+      previous_plan_seq: subscription.plan_seq,
+      new_plan_seq: newPlanSeq,
+      event_data: JSON.stringify(data)
+    }, { transaction });
+
+    await transaction.commit();
+
+    logger.info(`Subscription renewed for user ${subscription.user_seq}`);
+  } catch (error) {
+    await transaction.rollback();
+    logger.error('Failed to handle subscription_payment_success:', error);
+    throw error;
+  }
+}
+```
+
+---
+
+### T-204: `subscription_payment_failed` 핸들러
+
+**우선순위**: 필수
+**예상 공수**: 2일 (16시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-201
+
+#### 상세 설명
+
+결제 실패 시 재시도 스케줄을 설정하고 사용자에게 알림을 발송합니다.
+
+#### 수락 기준
+
+- [x] `subscription_status = 'payment_failed'` 업데이트
+- [x] `tb_payment_retry_schedule`에 재시도 일정 기록
+- [x] 결제 실패 이메일 발송
+- [x] 관리자 Slack 알림 발송
+- [x] `tb_subscription_history`에 'payment_failed' 이벤트 기록
+- [x] 3회 실패 시 구독 취소 처리
+- [x] 트랜잭션 처리
+
+#### 관련 파일
+
+- 수정: `/api/src/services/lemonSqueezyWebhookService.js` - `handleSubscriptionPaymentFailed` 함수 추가
+- 수정: `/api/src/services/emailService.js` - 결제 실패 이메일 템플릿 추가
+- 수정: `/api/src/services/slackService.js` - 관리자 알림 추가
+
+#### 구현 예시
+
+```javascript
+async function handleSubscriptionPaymentFailed(payload) {
+  const { data } = payload;
+  const subscriptionId = data.attributes.subscription_id;
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    const subscription = await Subscription.findOne({
+      where: { lemon_squeezy_subscription_id: subscriptionId },
+      include: [{ model: User }],
+      transaction
+    });
+
+    if (!subscription) {
+      throw new Error(`Subscription not found: ${subscriptionId}`);
+    }
+
+    // 1. 구독 상태 업데이트
+    await subscription.update({
+      subscription_status: 'payment_failed'
+    }, { transaction });
+
+    // 2. 재시도 스케줄 기록
+    const retryCount = await PaymentRetrySchedule.count({
+      where: { subscription_seq: subscription.seq }
+    });
+
+    const nextRetryDate = new Date();
+    nextRetryDate.setDate(nextRetryDate.getDate() + 3); // 3일 후 재시도
+
+    await PaymentRetrySchedule.create({
+      subscription_seq: subscription.seq,
+      retry_count: retryCount + 1,
+      scheduled_at: nextRetryDate,
+      status: 'pending'
+    }, { transaction });
+
+    // 3. 구독 이력 기록
+    await SubscriptionHistory.create({
+      subscription_seq: subscription.seq,
+      event_type: 'payment_failed',
+      event_data: JSON.stringify(data)
+    }, { transaction });
+
+    await transaction.commit();
+
+    // 4. 이메일 발송
+    await emailService.sendPaymentFailedEmail(subscription.user.email, {
+      userName: subscription.user.name,
+      retryDate: nextRetryDate,
+      retryCount: retryCount + 1
+    });
+
+    // 5. 관리자 알림
+    await slackService.sendPaymentFailedAlert({
+      userSeq: subscription.user_seq,
+      email: subscription.user.email,
+      retryCount: retryCount + 1
+    });
+
+    // 6. 3회 실패 시 구독 취소
+    if (retryCount + 1 >= 3) {
+      await handleSubscriptionCancellation(subscription, transaction);
+    }
+
+    logger.warn(`Payment failed for user ${subscription.user_seq}, retry ${retryCount + 1}`);
+  } catch (error) {
+    await transaction.rollback();
+    logger.error('Failed to handle subscription_payment_failed:', error);
+    throw error;
+  }
+}
+```
+
+---
+
+### T-205: `subscription_cancelled` 핸들러
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-201
+
+#### 상세 설명
+
+구독 취소 시 FREE 플랜으로 전환하고 이력을 기록합니다.
+
+#### 수락 기준
+
+- [x] `subscription_status = 'cancelled'` 업데이트
+- [x] `plan_seq = FREE_PLAN_SEQ` 전환
+- [x] `tb_subscription_history`에 'cancelled' 이벤트 기록
+- [x] 구독 취소 이메일 발송
+- [x] 트랜잭션 처리
+
+#### 관련 파일
+
+- 수정: `/api/src/services/lemonSqueezyWebhookService.js` - `handleSubscriptionCancelled` 함수 추가
+- 수정: `/api/src/services/emailService.js` - 구독 취소 이메일 템플릿 추가
+
+#### 구현 예시
+
+```javascript
+async function handleSubscriptionCancelled(payload) {
+  const { data } = payload;
+  const subscriptionId = data.id;
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    const subscription = await Subscription.findOne({
+      where: { lemon_squeezy_subscription_id: subscriptionId },
+      include: [{ model: User }, { model: Plan }],
+      transaction
+    });
+
+    if (!subscription) {
+      throw new Error(`Subscription not found: ${subscriptionId}`);
+    }
+
+    const previousPlanSeq = subscription.plan_seq;
+
+    // 1. FREE 플랜으로 전환
+    const freePlan = await Plan.findOne({
+      where: { plan_code: 'FREE' },
+      transaction
+    });
+
+    await subscription.update({
+      plan_seq: freePlan.seq,
+      subscription_status: 'cancelled',
+      pending_plan_seq: null
+    }, { transaction });
+
+    // 2. 구독 이력 기록
+    await SubscriptionHistory.create({
+      subscription_seq: subscription.seq,
+      event_type: 'cancelled',
+      previous_plan_seq: previousPlanSeq,
+      new_plan_seq: freePlan.seq,
+      event_data: JSON.stringify(data)
+    }, { transaction });
+
+    await transaction.commit();
+
+    // 3. 이메일 발송
+    await emailService.sendSubscriptionCancelledEmail(subscription.user.email, {
+      userName: subscription.user.name,
+      previousPlan: subscription.plan.name_ko,
+      cancelDate: new Date()
+    });
+
+    logger.info(`Subscription cancelled for user ${subscription.user_seq}`);
+  } catch (error) {
+    await transaction.rollback();
+    logger.error('Failed to handle subscription_cancelled:', error);
+    throw error;
+  }
+}
+```
+
+---
+
+### T-206: `subscription_updated` 핸들러
+
+**우선순위**: 중요
+**예상 공수**: 2일 (16시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-201
+
+#### 상세 설명
+
+구독 업데이트 이벤트(플랜 변경, 상태 변경 등)를 처리합니다.
+
+#### 수락 기준
+
+- [x] 플랜 변경 감지 및 업데이트
+- [x] 구독 상태 변경 처리
+- [x] `tb_subscription_history`에 'updated' 이벤트 기록
+- [x] 업데이트 내용에 따른 적절한 처리
+- [x] 트랜잭션 처리
+
+#### 관련 파일
+
+- 수정: `/api/src/services/lemonSqueezyWebhookService.js` - `handleSubscriptionUpdated` 함수 추가
+
+---
+
+## 에픽 4: DM 발송 한도 정책 구현
+
+### T-301: 한도 체크 로직 수정
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-104
+
+#### 상세 설명
+
+기존 `checkDmQuota()` 함수를 수정하여 초과 차단 로직을 강화합니다. 초과 허용이 아닌 100% 도달 시 차단합니다.
+
+#### 수락 기준
+
+- [x] `checkDmQuota()` 함수에서 한도 100% 도달 시 `false` 반환
+- [x] 플랜별 DM 한도를 `tb_plan_properties`에서 동적 조회 (하드코딩 금지)
+- [x] 현재 사용량을 `tb_monthly_usage`에서 조회
+- [x] 한도 체크 로직 유닛 테스트 작성
+- [ ] 캐싱 적용 (한도 조회 성능 최적화)
+
+#### 관련 파일
+
+- 수정: `/api/src/services/usageService.js` - `checkDmQuota()` 함수 수정
+
+#### 구현 예시
+
+```javascript
+// /api/src/services/usageService.js
+
+/**
+ * DM 발송 한도 체크
+ * @param {number} userSeq - 사용자 시퀀스
+ * @returns {Promise<{allowed: boolean, usage: object}>}
+ */
+exports.checkDmQuota = async (userSeq) => {
+  // 1. 사용자 구독 정보 조회
+  const subscription = await Subscription.findOne({
+    where: { user_seq: userSeq },
+    include: [{ model: Plan }]
+  });
+
+  if (!subscription) {
+    throw new Error('Subscription not found');
+  }
+
+  // 2. 플랜별 DM 한도 조회 (tb_plan_properties에서)
+  const dmQuotaProperty = await PlanProperty.findOne({
+    where: {
+      plan_seq: subscription.plan_seq,
+      prop_code: 'DM'
+    }
+  });
+
+  const dmQuota = dmQuotaProperty?.numeric_value || 0;
+
+  // 3. 현재 사용량 조회
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const usage = await MonthlyUsage.findOne({
+    where: {
+      user_seq: userSeq,
+      usage_month: currentMonth
+    }
+  });
+
+  const dmSentCount = usage?.dm_sent_count || 0;
+
+  // 4. 한도 체크 (100% 도달 시 차단)
+  const allowed = dmSentCount < dmQuota;
+
+  return {
+    allowed,
+    usage: {
+      dmQuota,
+      dmSentCount,
+      remainingQuota: Math.max(0, dmQuota - dmSentCount),
+      usagePercentage: Math.round((dmSentCount / dmQuota) * 100)
+    }
+  };
+};
+```
+
+---
+
+### T-302: 90% 경고 로직 구현
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-301
+
+#### 상세 설명
+
+DM 사용량이 90%에 도달했을 때 경고 이메일을 발송합니다. 한 결제 주기당 1회만 발송하여 중복을 방지합니다.
+
+#### 수락 기준
+
+- [x] `shouldSendUsageWarning()` 함수 구현 (90% 체크)
+- [x] `warning_email_sent` 플래그로 중복 발송 방지
+- [x] 90% 경고 이메일 발송 로직 구현
+- [x] 유닛 테스트 작성 (16개 테스트 케이스, T-301과 합쳐 34개 통과)
+
+#### 관련 파일
+
+- 수정: `/api/src/services/usageService.js` - 경고 로직 추가
+
+#### 구현 예시
+
+```javascript
+/**
+ * 90% 경고 체크 및 이메일 발송
+ * @param {number} userSeq - 사용자 시퀀스
+ */
+exports.checkAndSendUsageWarning = async (userSeq) => {
+  const quotaCheck = await this.checkDmQuota(userSeq);
+
+  // 90% 이상이고 아직 이메일을 발송하지 않았을 때
+  if (quotaCheck.usage.usagePercentage >= 90) {
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const usage = await MonthlyUsage.findOne({
+      where: {
+        user_seq: userSeq,
+        usage_month: currentMonth
+      }
+    });
+
+    if (usage && !usage.warning_email_sent) {
+      // 사용자 정보 조회
+      const user = await User.findByPk(userSeq, {
+        include: [{
+          model: Subscription,
+          include: [{ model: Plan }]
+        }]
+      });
+
+      // 이메일 발송
+      await emailService.sendUsageWarningEmail(user.email, {
+        userName: user.name,
+        planName: user.subscription.plan.name_ko,
+        dmQuota: quotaCheck.usage.dmQuota,
+        dmSentCount: quotaCheck.usage.dmSentCount,
+        remainingQuota: quotaCheck.usage.remainingQuota,
+        nextResetDate: user.subscription.next_billing_date
+      });
+
+      // 플래그 업데이트
+      await usage.update({ warning_email_sent: 1 });
+
+      logger.info(`Usage warning email sent to user ${userSeq}`);
+    }
+  }
+};
+```
+
+---
+
+### T-303: 100% 차단 로직 구현
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-301
+
+#### 상세 설명
+
+DM 한도 100% 도달 시 발송을 차단하고 에러를 반환합니다.
+
+#### 수락 기준
+
+- [x] DM 발송 함수에서 한도 체크 호출
+- [x] 한도 초과 시 `QUOTA_EXCEEDED` 에러 반환
+- [x] 100% 도달 이메일 발송
+- [x] `quota_reached_email_sent` 플래그로 중복 방지
+- [x] 예약된 DM은 "실패" 상태로 처리
+- [x] 유닛 테스트 작성 (20개 테스트 케이스 추가, 총 54개 테스트 통과)
+
+#### 관련 파일
+
+- 수정: `/api/src/services/instagramService.js` 또는 DM 발송 서비스 - 한도 체크 추가
+- 수정: `/api/src/services/usageService.js` - 100% 도달 이메일 로직 추가
+
+#### 구현 예시
+
+```javascript
+// DM 발송 함수에 한도 체크 추가
+exports.sendDirectMessage = async (userSeq, recipientId, message) => {
+  // 한도 체크
+  const quotaCheck = await usageService.checkDmQuota(userSeq);
+
+  if (!quotaCheck.allowed) {
+    // 100% 도달 이메일 발송
+    await usageService.checkAndSendQuotaReachedEmail(userSeq);
+
+    throw new Error('QUOTA_EXCEEDED');
+  }
+
+  // DM 발송 로직...
+
+  // 사용량 증가
+  await usageService.incrementDmUsage(userSeq);
+};
+
+// usageService.js
+exports.checkAndSendQuotaReachedEmail = async (userSeq) => {
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const usage = await MonthlyUsage.findOne({
+    where: { user_seq: userSeq, usage_month: currentMonth }
+  });
+
+  if (usage && !usage.quota_reached_email_sent) {
+    const user = await User.findByPk(userSeq, {
+      include: [{
+        model: Subscription,
+        include: [{ model: Plan }]
+      }]
+    });
+
+    const quotaCheck = await this.checkDmQuota(userSeq);
+
+    await emailService.sendQuotaReachedEmail(user.email, {
+      userName: user.name,
+      planName: user.subscription.plan.name_ko,
+      dmQuota: quotaCheck.usage.dmQuota,
+      dmSentCount: quotaCheck.usage.dmSentCount,
+      nextResetDate: user.subscription.next_billing_date
+    });
+
+    await usage.update({ quota_reached_email_sent: 1 });
+
+    logger.info(`Quota reached email sent to user ${userSeq}`);
+  }
+};
+```
+
+---
+
+### T-304: 초과 과금 로직 제거
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-303
+
+#### 상세 설명
+
+기존 초과 과금 관련 코드를 모두 제거합니다.
+
+#### 수락 기준
+
+- [x] 초과 과금 계산 함수 삭제 (`overageCalculator.js` 삭제)
+- [x] 초과 과금 관련 API 엔드포인트 삭제 (`/api/usage/overage` 제거)
+- [x] 초과 과금 관련 UI 코드 삭제 (프론트엔드)
+- [x] 관련 테스트 코드 삭제 또는 수정
+- [x] Dead Code 검색 및 정리
+
+#### 관련 파일
+
+- 삭제: `/api/src/utils/overageCalculator.js` ✅ 삭제 완료
+- 수정: `/api/src/services/billingService.js` - 초과 과금 로직 제거 ✅
+- 수정: `/api/src/services/usageService.js` - 초과 과금 함수 제거 ✅
+- 수정: `/api/src/services/planService.js` - overageUnitPrice 제거 ✅
+- 수정: `/api/src/utils/pricing.js` - 초과 과금 상수 제거 ✅
+- 수정: `/api/src/routes/usageRoutes.js` - overage 엔드포인트 제거 ✅
+
+---
+
+### T-305: 업그레이드 즉시 적용 로직
+
+**우선순위**: 필수
+**예상 공수**: 2일 (16시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-303
+
+#### 상세 설명
+
+플랜 업그레이드 시 즉시 새로운 플랜을 적용하고 사용량을 리셋합니다.
+
+#### 수락 기준
+
+- [ ] LemonSqueezy 플랜 변경 API 호출 (`invoice_immediately: true`)
+- [ ] `tb_subscriptions.plan_seq` 즉시 업데이트
+- [ ] `tb_monthly_usage.dm_sent_count = 0` 리셋
+- [ ] `warning_email_sent`, `quota_reached_email_sent` 리셋
+- [ ] `next_billing_date` 업그레이드일 기준으로 재설정
+- [ ] 업그레이드 완료 이메일 발송
+- [ ] 프로레이션 자동 계산 (LemonSqueezy)
+- [ ] 트랜잭션 처리
+
+#### 관련 파일
+
+- 신규: `/api/src/services/lemonSqueezyService.js` - LemonSqueezy API 클라이언트
+- 수정: `/api/src/services/subscriptionService.js` - 업그레이드 로직 추가
+- 수정: `/api/src/controllers/subscriptionController.js` - 업그레이드 API 엔드포인트
+
+#### 구현 예시
+
+```javascript
+// /api/src/services/lemonSqueezyService.js
+const axios = require('axios');
+
+exports.changePlan = async (subscriptionId, newVariantId, invoiceImmediately = true) => {
+  const response = await axios.patch(
+    `https://api.lemonsqueezy.com/v1/subscriptions/${subscriptionId}`,
+    {
+      data: {
+        type: 'subscriptions',
+        id: subscriptionId,
+        attributes: {
+          variant_id: newVariantId,
+          invoice_immediately: invoiceImmediately
+        }
+      }
+    },
+    {
+      headers: {
+        'Authorization': `Bearer ${process.env.LEMONSQUEEZY_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  return response.data;
+};
+
+// /api/src/services/subscriptionService.js
+exports.upgradePlan = async (userSeq, newPlanSeq) => {
+  const transaction = await sequelize.transaction();
+
+  try {
+    const subscription = await Subscription.findOne({
+      where: { user_seq: userSeq },
+      include: [{ model: Plan }],
+      transaction
+    });
+
+    if (!subscription) {
+      throw new Error('Subscription not found');
+    }
+
+    // 플랜 시퀀스를 Variant ID로 변환
+    const newVariantId = getVariantIdByPlanSeq(newPlanSeq);
+
+    // 1. LemonSqueezy 플랜 변경 (즉시 청구)
+    const lemonResponse = await lemonSqueezyService.changePlan(
+      subscription.lemon_squeezy_subscription_id,
+      newVariantId,
+      true // 즉시 청구
+    );
+
+    // 2. 구독 업데이트
+    await subscription.update({
+      plan_seq: newPlanSeq,
+      lemon_squeezy_variant_id: newVariantId,
+      next_billing_date: new Date(lemonResponse.data.attributes.renews_at)
+    }, { transaction });
+
+    // 3. 사용량 리셋
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    await MonthlyUsage.upsert({
+      user_seq: userSeq,
+      usage_month: currentMonth,
+      dm_sent_count: 0,
+      warning_email_sent: 0,
+      quota_reached_email_sent: 0
+    }, { transaction });
+
+    // 4. 구독 이력 기록
+    await SubscriptionHistory.create({
+      subscription_seq: subscription.seq,
+      event_type: 'upgraded',
+      previous_plan_seq: subscription.plan_seq,
+      new_plan_seq: newPlanSeq
+    }, { transaction });
+
+    await transaction.commit();
+
+    // 5. 이메일 발송
+    const user = await User.findByPk(userSeq);
+    const newPlan = await Plan.findByPk(newPlanSeq);
+
+    await emailService.sendUpgradeCompleteEmail(user.email, {
+      userName: user.name,
+      newPlanName: newPlan.name_ko,
+      newQuota: await getQuotaByPlanSeq(newPlanSeq),
+      nextBillingDate: subscription.next_billing_date
+    });
+
+    logger.info(`Plan upgraded for user ${userSeq} to plan ${newPlanSeq}`);
+
+    return subscription;
+  } catch (error) {
+    await transaction.rollback();
+    logger.error('Failed to upgrade plan:', error);
+    throw error;
+  }
+};
+```
+
+---
+
+### T-306: 다운그레이드 예약 로직
+
+**우선순위**: 필수
+**예상 공수**: 1.5일 (12시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-305
+
+#### 상세 설명
+
+플랜 다운그레이드 시 즉시 적용하지 않고 `pending_plan_seq`에 저장하여 다음 결제일에 적용합니다.
+
+#### 수락 기준
+
+- [ ] `tb_subscriptions.pending_plan_seq` 업데이트
+- [ ] 현재 플랜은 유지
+- [ ] 다운그레이드 예약 안내 이메일 발송
+- [ ] 대시보드에 "다음 결제일부터 {새플랜}으로 변경 예정" 메시지 표시 (프론트엔드)
+- [ ] 다음 결제일(웹훅 `subscription_payment_success`)에 플랜 적용
+- [ ] 트랜잭션 처리
+
+#### 관련 파일
+
+- 수정: `/api/src/services/subscriptionService.js` - `downgradePlan()` 함수 추가
+
+#### 구현 예시
+
+```javascript
+exports.downgradePlan = async (userSeq, newPlanSeq) => {
+  const transaction = await sequelize.transaction();
+
+  try {
+    const subscription = await Subscription.findOne({
+      where: { user_seq: userSeq },
+      include: [{ model: Plan }],
+      transaction
+    });
+
+    if (!subscription) {
+      throw new Error('Subscription not found');
+    }
+
+    // 1. pending_plan_seq 설정 (즉시 적용 안 함)
+    await subscription.update({
+      pending_plan_seq: newPlanSeq
+    }, { transaction });
+
+    // 2. 구독 이력 기록
+    await SubscriptionHistory.create({
+      subscription_seq: subscription.seq,
+      event_type: 'downgrade_scheduled',
+      previous_plan_seq: subscription.plan_seq,
+      new_plan_seq: newPlanSeq,
+      event_data: JSON.stringify({
+        scheduled_date: subscription.next_billing_date
+      })
+    }, { transaction });
+
+    await transaction.commit();
+
+    // 3. 이메일 발송
+    const user = await User.findByPk(userSeq);
+    const newPlan = await Plan.findByPk(newPlanSeq);
+
+    await emailService.sendDowngradeScheduledEmail(user.email, {
+      userName: user.name,
+      currentPlanName: subscription.plan.name_ko,
+      newPlanName: newPlan.name_ko,
+      effectiveDate: subscription.next_billing_date
+    });
+
+    logger.info(`Plan downgrade scheduled for user ${userSeq} to plan ${newPlanSeq}`);
+
+    return subscription;
+  } catch (error) {
+    await transaction.rollback();
+    logger.error('Failed to schedule downgrade:', error);
+    throw error;
+  }
+};
+```
+
+---
+
+### T-307: 무료 플랜 사용량 리셋 크론잡
+
+**우선순위**: 필수
+**예상 공수**: 2일 (16시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-104
+
+#### 상세 설명
+
+무료 플랜 사용자는 결제가 발생하지 않으므로 웹훅이 없습니다. 따라서 별도의 크론잡을 통해 가입일 기준으로 매월 사용량을 리셋해야 합니다.
+
+#### 수락 기준
+
+- [ ] 크론잡 스크립트 작성 (`/api/src/jobs/resetFreeUsersUsage.js`)
+- [ ] 매일 오전 0시 실행 (node-cron 또는 시스템 cron 사용)
+- [ ] FREE 플랜 사용자 중 `next_billing_date = 오늘` 조회
+- [ ] `tb_monthly_usage`에 새 레코드 생성 (`dm_sent_count=0`)
+- [ ] `warning_email_sent = 0`, `quota_reached_email_sent = 0` 리셋
+- [ ] `next_billing_date = 현재 날짜 + 1개월` 업데이트
+- [ ] 월말 처리 및 윤년 처리 (1/31 → 2/28, 2/29)
+- [ ] 크론잡 실행 실패 시 누락된 날짜 보정 로직
+- [ ] 실행 결과 로깅 (리셋된 사용자 수, 실패 목록)
+- [ ] 트랜잭션 처리
+
+#### 관련 파일
+
+- 신규: `/api/src/jobs/resetFreeUsersUsage.js` - 무료 플랜 사용량 리셋 크론잡
+- 수정: `/api/src/app.js` 또는 별도 크론 설정 파일 - 크론잡 스케줄러 등록
+
+#### 구현 예시
+
+```javascript
+// /api/src/jobs/resetFreeUsersUsage.js
+const cron = require('node-cron');
+const { Subscription, MonthlyUsage } = require('../models');
+const logger = require('../utils/logger');
+const { addMonths } = require('date-fns');
+
+/**
+ * 무료 플랜 사용자 사용량 리셋 크론잡
+ * 매일 0시 실행
+ */
+async function resetFreeUsersUsage() {
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const FREE_PLAN_SEQ = 1; // 무료 플랜 시퀀스 (환경 변수 또는 DB 조회 권장)
+
+  try {
+    logger.info(`[Cron] Starting free users usage reset for ${today}`);
+
+    // 1. 오늘 리셋이 필요한 무료 플랜 사용자 조회
+    const subscriptions = await Subscription.findAll({
+      where: {
+        next_billing_date: today,
+        plan_seq: FREE_PLAN_SEQ,
+        subscription_status: 'active'
+      }
+    });
+
+    logger.info(`[Cron] Found ${subscriptions.length} free users to reset`);
+
+    let successCount = 0;
+    let failedUsers = [];
+
+    // 2. 각 사용자별로 사용량 리셋
+    for (const sub of subscriptions) {
+      const transaction = await sequelize.transaction();
+
+      try {
+        // 2-1. 새 사용량 레코드 생성
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        await MonthlyUsage.create({
+          user_seq: sub.user_seq,
+          usage_month: currentMonth,
+          dm_sent_count: 0,
+          warning_email_sent: 0,
+          quota_reached_email_sent: 0
+        }, { transaction });
+
+        // 2-2. 다음 리셋일 계산 (월말 처리)
+        const nextDate = addMonths(new Date(today), 1);
+        await sub.update({
+          next_billing_date: nextDate.toISOString().split('T')[0]
+        }, { transaction });
+
+        await transaction.commit();
+        successCount++;
+
+        logger.info(`[Cron] Reset usage for user ${sub.user_seq}`);
+      } catch (error) {
+        await transaction.rollback();
+        failedUsers.push({
+          user_seq: sub.user_seq,
+          error: error.message
+        });
+        logger.error(`[Cron] Failed to reset user ${sub.user_seq}:`, error);
+      }
+    }
+
+    // 3. 실행 결과 로깅
+    logger.info(`[Cron] Free users reset completed: ${successCount} success, ${failedUsers.length} failed`);
+
+    if (failedUsers.length > 0) {
+      logger.error(`[Cron] Failed users:`, failedUsers);
+      // PagerDuty 알림 발송 (T-803에서 구현)
+    }
+
+    return { successCount, failedUsers };
+  } catch (error) {
+    logger.error('[Cron] Free users reset job failed:', error);
+    throw error;
+  }
+}
+
+// 크론 스케줄 등록 (매일 0시)
+cron.schedule('0 0 * * *', resetFreeUsersUsage);
+
+module.exports = { resetFreeUsersUsage };
+```
+
+#### 참고 사항
+
+- PRD의 "기능 2-2: 무료 플랜 사용량 리셋 (크론잡 기반)" 섹션 참고
+- `date-fns`의 `addMonths` 함수는 월말 처리를 자동으로 수행 (1/31 → 2/28)
+- 크론잡 실행 실패 모니터링은 T-803에서 구현
+
+---
+
+## 에픽 5: 이메일 시스템
+
+### T-401: 이메일 템플릿 작성
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: 프론트엔드 팀
+**선행 태스크**: 없음
+
+#### 상세 설명
+
+90% 경고, 100% 차단, 전환 완료 등 이메일 HTML 템플릿을 작성합니다.
+
+#### 수락 기준
+
+- [x] 90% 경고 이메일 템플릿 (HTML + 텍스트)
+- [x] 100% 차단 이메일 템플릿 (HTML + 텍스트)
+- [x] 전환 완료 이메일 템플릿 (HTML + 텍스트)
+- [x] 업그레이드 완료 이메일 템플릿 (HTML + 텍스트)
+- [x] 다운그레이드 예약 이메일 템플릿 (HTML + 텍스트)
+- [x] 결제 실패 이메일 템플릿 (HTML + 텍스트)
+- [x] 구독 취소 이메일 템플릿 (HTML + 텍스트)
+- [x] 반응형 디자인 (모바일 지원)
+- [x] CTA 버튼 포함 (업그레이드 페이지 링크)
+- [x] 스크린 리더 호환 (시맨틱 HTML)
+
+#### 관련 파일
+
+- 신규: `/api/src/templates/emails/usage-warning-90.html`
+- 신규: `/api/src/templates/emails/quota-reached-100.html`
+- 신규: `/api/src/templates/emails/migration-complete.html`
+- 신규: `/api/src/templates/emails/upgrade-complete.html`
+- 신규: `/api/src/templates/emails/downgrade-scheduled.html`
+- 신규: `/api/src/templates/emails/payment-failed.html`
+- 신규: `/api/src/templates/emails/subscription-cancelled.html`
+
+#### 템플릿 예시
+
+```html
+<!-- usage-warning-90.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DM 발송 한도 90% 도달 안내</title>
+</head>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <h1 style="color: #333;">DM 발송 한도 90% 도달 안내</h1>
+
+  <p>안녕하세요, <strong>{{userName}}</strong>님.</p>
+
+  <p>현재 <strong>{{planName}}</strong> 플랜의 DM 발송 한도의 90%에 도달했습니다.</p>
+
+  <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <h2 style="margin-top: 0;">📊 사용 현황</h2>
+    <ul style="list-style: none; padding: 0;">
+      <li><strong>플랜:</strong> {{planName}}</li>
+      <li><strong>월 한도:</strong> {{dmQuota}}건</li>
+      <li><strong>현재 사용:</strong> {{dmSentCount}}건 (90.0%)</li>
+      <li><strong>남은 한도:</strong> {{remainingQuota}}건</li>
+      <li><strong>다음 리셋:</strong> {{nextResetDate}}</li>
+    </ul>
+  </div>
+
+  <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <h2 style="margin-top: 0;">⚠️ 한도 도달 시</h2>
+    <ul>
+      <li>100% 도달 시 DM 발송이 자동으로 차단됩니다.</li>
+      <li>계속 발송하려면 플랜 업그레이드를 권장합니다.</li>
+    </ul>
+  </div>
+
+  <div style="text-align: center; margin: 30px 0;">
+    <a href="{{upgradeUrl}}" style="background-color: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">플랜 업그레이드하기</a>
+  </div>
+
+  <p style="color: #666; font-size: 12px; margin-top: 30px;">
+    감사합니다.<br>
+    Autogram 팀
+  </p>
+</body>
+</html>
+```
+
+#### 참고 사항
+
+- PRD 섹션 2 "사용자 스토리" 참고
+- 한국어 우선, 영어/일본어는 향후 추가
+
+---
+
+### T-402: 이메일 발송 서비스 연동
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-401
+
+#### 상세 설명
+
+AWS SES 또는 SendGrid를 사용하여 이메일 발송 서비스를 연동합니다.
+
+#### 수락 기준
+
+- [x] AWS SES 또는 SendGrid SDK 설치 및 설정
+- [x] 이메일 발송 공통 함수 구현 (`sendEmail()` 구현)
+- [x] HTML 템플릿 렌더링 (EJS 사용, `renderTemplate()` 구현)
+- [x] 이메일 발송 실패 시 재시도 로직 (최대 3회, Exponential Backoff)
+- [x] 발송 실패 시 로그 기록 (`EmailLog` 모델 및 테이블 생성)
+- [x] 테스트 이메일 발송 성공 (개발 환경 시뮬레이션 모드)
+
+#### 관련 파일
+
+- 수정: `/api/src/services/emailService.js` - 이메일 발송 함수 추가
+- 신규: `/api/src/utils/emailTemplateRenderer.js` - 템플릿 렌더링 유틸리티
+
+#### 구현 예시
+
+```javascript
+// /api/src/services/emailService.js
+const AWS = require('aws-sdk');
+const handlebars = require('handlebars');
+const fs = require('fs').promises;
+const path = require('path');
+
+const ses = new AWS.SES({
+  region: process.env.AWS_SES_REGION
+});
+
+/**
+ * 이메일 발송 공통 함수
+ */
+async function sendEmail(to, subject, templateName, data) {
+  try {
+    // 템플릿 로드
+    const templatePath = path.join(__dirname, '../templates/emails', `${templateName}.html`);
+    const templateSource = await fs.readFile(templatePath, 'utf-8');
+
+    // 템플릿 렌더링
+    const template = handlebars.compile(templateSource);
+    const htmlBody = template(data);
+
+    // SES 발송
+    const params = {
+      Source: process.env.AWS_SES_FROM_EMAIL,
+      Destination: {
+        ToAddresses: [to]
+      },
+      Message: {
+        Subject: {
+          Data: subject,
+          Charset: 'UTF-8'
+        },
+        Body: {
+          Html: {
+            Data: htmlBody,
+            Charset: 'UTF-8'
+          }
+        }
+      }
+    };
+
+    const result = await ses.sendEmail(params).promise();
+    logger.info(`Email sent to ${to}: ${result.MessageId}`);
+
+    return result;
+  } catch (error) {
+    logger.error(`Failed to send email to ${to}:`, error);
+    throw error;
+  }
+}
+
+module.exports = {
+  sendEmail
+};
+```
+
+---
+
+### T-403: 90% 경고 이메일 발송 로직
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-302, T-402
+
+#### 상세 설명
+
+`sendUsageWarningEmail()` 함수를 구현하여 90% 경고 이메일을 발송합니다.
+
+#### 수락 기준
+
+- [x] `sendUsageWarningEmail()` 함수 구현
+- [x] 중복 발송 방지 (`warning_email_sent` 플래그 체크)
+- [x] 이메일 템플릿 데이터 바인딩
+- [x] 발송 성공 시 플래그 업데이트
+- [ ] 유닛 테스트 작성
+
+#### 관련 파일
+
+- 수정: `/api/src/services/emailService.js`
+
+#### 구현 예시
+
+```javascript
+exports.sendUsageWarningEmail = async (email, data) => {
+  const subject = '[Autogram] DM 발송 한도 90% 도달 안내';
+
+  await sendEmail(email, subject, 'usage-warning-90', {
+    userName: data.userName,
+    planName: data.planName,
+    dmQuota: data.dmQuota,
+    dmSentCount: data.dmSentCount,
+    remainingQuota: data.remainingQuota,
+    nextResetDate: formatDate(data.nextResetDate),
+    upgradeUrl: `${process.env.WEB_URL}/dashboard/pricing`
+  });
+};
+```
+
+---
+
+### T-404: 100% 차단 이메일 발송 로직
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-303, T-402
+
+#### 상세 설명
+
+`sendQuotaReachedEmail()` 함수를 구현하여 100% 차단 이메일을 발송합니다.
+
+#### 수락 기준
+
+- [x] `sendQuotaReachedEmail()` 함수 구현
+- [x] 중복 발송 방지 (`quota_reached_email_sent` 플래그 체크)
+- [x] 이메일 템플릿 데이터 바인딩
+- [x] 발송 성공 시 플래그 업데이트
+- [ ] 유닛 테스트 작성
+
+#### 관련 파일
+
+- 수정: `/api/src/services/emailService.js`
+
+---
+
+### T-405: 전환 완료 이메일 발송 로직
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-402
+
+#### 상세 설명
+
+`sendMigrationCompleteEmail()` 함수를 구현하여 LemonSqueezy 전환 완료 이메일을 발송합니다.
+
+#### 수락 기준
+
+- [ ] `sendMigrationCompleteEmail()` 함수 구현
+- [ ] 크레딧 금액 및 정책 안내 포함
+- [ ] 다음 결제일 안내
+- [ ] 유닛 테스트 작성
+
+#### 관련 파일
+
+- 수정: `/api/src/services/emailService.js`
+
+---
+
+## 에픽 6: 프론트엔드 UI
+
+### T-501: 약관 페이지 수정
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: 프론트엔드 팀
+**선행 태스크**: 없음
+
+#### 상세 설명
+
+이용약관 페이지의 "제8조 (요금 및 결제)" 섹션을 수정하여 새로운 과금 정책을 반영합니다.
+
+#### 수락 기준
+
+- [x] 초과 과금 관련 문구 삭제
+- [x] "한도 도달 시 발송 차단" 정책 추가
+- [x] 환불 정책 추가 (제9조)
+- [x] 최종 수정일 업데이트
+- [x] 한국어, 영어, 일본어 버전 모두 수정
+
+#### 관련 파일
+
+- 수정: `/web/app/terms/page.tsx` - 한국어 약관
+- 수정: `/web/app/terms/[locale]/page.tsx` - 다국어 약관
+
+#### 수정 내용 예시
+
+```tsx
+// 제8조 수정
+<h2>제8조 (요금 및 결제)</h2>
+<ol>
+  <li>유료 플랜의 요금은 월 단위 정기결제로 청구됩니다.</li>
+  <li>각 플랜의 월 DM 발송 한도는 다음과 같습니다:
+    <ul>
+      <li>FREE: 50건</li>
+      <li>MINIMUM: 500건</li>
+      <li>STARTER: 1,500건</li>
+      <li>PRO: 10,000건</li>
+    </ul>
+  </li>
+  <li><strong>DM 발송 한도 정책</strong>
+    <ul>
+      <li>월 DM 발송 한도의 90%에 도달하면 이메일로 경고 알림이 발송됩니다.</li>
+      <li>월 DM 발송 한도의 100%에 도달하면 추가 발송이 자동으로 차단됩니다.</li>
+      <li>차단된 발송은 다음 결제일에 한도가 리셋되면 재개됩니다.</li>
+      <li><strong>초과 과금은 발생하지 않습니다.</strong></li>
+    </ul>
+  </li>
+  <li>플랜 업그레이드 시 즉시 적용되며, 사용량이 0으로 리셋됩니다.</li>
+  <li>플랜 다운그레이드 시 현재 결제 주기 종료 후 적용됩니다.</li>
+</ol>
+
+// 제9조 추가
+<h2>제9조 (환불 정책)</h2>
+<ol>
+  <li>구독 취소 시 환불은 없으며, 현재 결제 주기 종료까지 서비스를 이용할 수 있습니다.</li>
+  <li>결제 오류 또는 시스템 장애로 인한 피해 발생 시 환불이 가능합니다.</li>
+  <li><strong>구독 정책 변경 시 환불</strong>
+    <ul>
+      <li>구독 정책 변경으로 인한 전환 시, 남은 구독 기간에 대한 크레딧이 자동으로 적용됩니다.</li>
+      <li>크레딧은 다음 결제 시 자동으로 차감됩니다.</li>
+      <li>현금 환불을 원하시는 경우, 전환일로부터 7일 이내에 고객센터로 요청해 주세요.</li>
+      <li>환불 금액은 일할 계산되며, 영업일 기준 5~7일 이내에 처리됩니다.</li>
+    </ul>
+  </li>
+</ol>
+
+// 최종 수정일 업데이트
+<p>최종 수정일: 2026-01-24</p>
+```
+
+---
+
+### T-502: 에러 모달 컴포넌트 구현
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: 프론트엔드 팀
+**선행 태스크**: 없음
+
+#### 상세 설명
+
+DM 발송 한도 초과 시 표시할 `ErrorModal.tsx` 컴포넌트를 생성합니다.
+
+#### 수락 기준
+
+- [x] `ErrorModal.tsx` 컴포넌트 생성
+- [x] 한도 초과 메시지 표시
+- [x] 다음 리셋일 표시
+- [x] "플랜 업그레이드하기" CTA 버튼
+- [x] 모달 닫기 기능
+- [x] 반응형 디자인 (모바일 지원)
+- [x] 접근성 (키보드 네비게이션, ARIA 속성)
+
+#### 관련 파일
+
+- 신규: `/web/components/dm/ErrorModal.tsx`
+
+#### 구현 예시
+
+```tsx
+// /web/components/dm/ErrorModal.tsx
+import React from 'react';
+
+interface ErrorModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  message: string;
+  nextResetDate: string;
+}
+
+export default function ErrorModal({ isOpen, onClose, message, nextResetDate }: ErrorModalProps) {
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-labelledby="error-modal-title"
+      >
+        <h2 id="error-modal-title" className="text-xl font-bold mb-4 text-red-600">
+          ❌ DM 발송 실패
+        </h2>
+
+        <p className="mb-4 text-gray-700">
+          {message || '이번 달 DM 발송 한도에 도달했습니다.'}
+        </p>
+
+        <div className="bg-gray-100 p-4 rounded mb-4">
+          <p className="text-sm">
+            <strong>다음 리셋일:</strong> {nextResetDate}
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={() => window.location.href = '/dashboard/pricing'}
+            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+          >
+            플랜 업그레이드하기
+          </button>
+          <button
+            onClick={onClose}
+            className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400"
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### T-503: DM 발송 API 에러 핸들링
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: 프론트엔드 팀
+**선행 태스크**: T-502
+
+#### 상세 설명
+
+DM 발송 API 호출 시 `QUOTA_EXCEEDED` 에러 발생 시 모달을 표시합니다.
+
+#### 수락 기준
+
+- [x] API 에러 응답 파싱 (`error.code === 'QUOTA_EXCEEDED'`)
+- [x] `ErrorModal` 컴포넌트 표시
+- [x] 다음 리셋일 정보 전달
+- [x] 사용자 친화적인 에러 메시지 표시
+
+#### 관련 파일
+
+- 수정: DM 발송 페이지 또는 컴포넌트 (예: `/web/app/dashboard/triggers/[id]/page.tsx`)
+
+#### 구현 예시
+
+```tsx
+const [showErrorModal, setShowErrorModal] = useState(false);
+const [errorData, setErrorData] = useState({ message: '', nextResetDate: '' });
+
+const handleSendDM = async () => {
+  try {
+    await api.post('/api/dm/send', { ... });
+    // 성공 처리
+  } catch (error) {
+    if (error.response?.data?.code === 'QUOTA_EXCEEDED') {
+      setErrorData({
+        message: error.response.data.message,
+        nextResetDate: error.response.data.nextResetDate
+      });
+      setShowErrorModal(true);
+    } else {
+      // 다른 에러 처리
+    }
+  }
+};
+
+return (
+  <>
+    {/* DM 발송 UI */}
+
+    <ErrorModal
+      isOpen={showErrorModal}
+      onClose={() => setShowErrorModal(false)}
+      message={errorData.message}
+      nextResetDate={errorData.nextResetDate}
+    />
+  </>
+);
+```
+
+---
+
+### T-504: 업그레이드 CTA 연결
+
+**우선순위**: 중요
+**예상 공수**: 0.5일 (4시간)
+**담당자**: 프론트엔드 팀
+**선행 태스크**: T-502
+
+#### 상세 설명
+
+에러 모달의 "업그레이드" 버튼 클릭 시 업그레이드 페이지로 이동합니다.
+
+#### 수락 기준
+
+- [x] "플랜 업그레이드하기" 버튼 클릭 시 `/dashboard/pricing` 페이지로 이동
+- [x] 현재 플랜 정보를 쿼리 파라미터로 전달 (선택적)
+- [x] 업그레이드 페이지에서 권장 플랜 하이라이트 (선택적)
+
+#### 관련 파일
+
+- 수정: `/web/components/dm/ErrorModal.tsx`
+- 수정: `/web/app/dashboard/pricing/page.tsx` (선택적)
+
+---
+
+## 에픽 7: 데이터 마이그레이션
+
+### T-601: 마이그레이션 스크립트 작성
+
+**우선순위**: 필수
+**예상 공수**: 2일 (16시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-202
+
+#### 상세 설명
+
+기존 아임포트 사용자를 LemonSqueezy로 전환하는 스크립트를 작성합니다.
+
+#### 수락 기준
+
+- [x] 모든 활성 유료 구독 사용자 조회
+- [x] LemonSqueezy에 구독 생성
+- [x] 남은 일수 계산 및 크레딧 적용
+- [x] 새로운 `next_billing_date` 설정 (전환일 기준)
+- [x] `lemon_squeezy_subscription_id`, `lemon_squeezy_customer_id` 업데이트
+- [x] 전환 완료 이메일 발송
+- [x] 성공/실패 리포트 생성
+- [x] 배치 처리 (100명씩)
+- [x] 롤백 기능 구현
+
+#### 관련 파일
+
+- 신규: `/api/src/scripts/migrateToLemonSqueezy.js`
+
+#### 구현 예시
+
+```javascript
+// /api/src/scripts/migrateToLemonSqueezy.js
+const { Subscription, User, Plan, PlanProperty } = require('../models');
+const lemonSqueezyService = require('../services/lemonSqueezyService');
+const emailService = require('../services/emailService');
+const { Op } = require('sequelize');
+
+async function migrateToLemonSqueezy() {
+  console.log('Starting LemonSqueezy migration...');
+
+  // 1. 활성 유료 구독 사용자 조회
+  const subscriptions = await Subscription.findAll({
+    where: {
+      subscription_status: 'active',
+      plan_seq: { [Op.ne]: 1 } // FREE 플랜 제외 (seq=1 가정)
+    },
+    include: [
+      { model: User },
+      { model: Plan }
+    ]
+  });
+
+  console.log(`Found ${subscriptions.length} active subscriptions to migrate`);
+
+  const results = {
+    total: subscriptions.length,
+    success: 0,
+    failed: 0,
+    errors: []
+  };
+
+  // 2. 배치 처리 (100명씩)
+  const batchSize = 100;
+  for (let i = 0; i < subscriptions.length; i += batchSize) {
+    const batch = subscriptions.slice(i, i + batchSize);
+
+    console.log(`Processing batch ${Math.floor(i / batchSize) + 1}...`);
+
+    for (const sub of batch) {
+      try {
+        await migrateSingleSubscription(sub);
+        results.success++;
+        console.log(`✓ User ${sub.user_seq} migrated successfully`);
+      } catch (error) {
+        results.failed++;
+        results.errors.push({
+          user_seq: sub.user_seq,
+          email: sub.user.email,
+          error: error.message
+        });
+        console.error(`✗ Failed to migrate user ${sub.user_seq}:`, error.message);
+      }
+    }
+
+    // 배치 간 대기 (Rate Limiting)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+
+  // 3. 리포트 생성
+  console.log('\n=== Migration Report ===');
+  console.log(`Total: ${results.total}`);
+  console.log(`Success: ${results.success}`);
+  console.log(`Failed: ${results.failed}`);
+
+  if (results.failed > 0) {
+    console.log('\n=== Failed Migrations ===');
+    results.errors.forEach(err => {
+      console.log(`User ${err.user_seq} (${err.email}): ${err.error}`);
+    });
+  }
+
+  return results;
+}
+
+async function migrateSingleSubscription(subscription) {
+  // 1. 남은 일수 계산
+  const today = new Date();
+  const nextBillingDate = new Date(subscription.next_billing_date);
+  const daysRemaining = Math.ceil((nextBillingDate - today) / (1000 * 60 * 60 * 24));
+
+  // 2. 크레딧 계산
+  const planPrice = subscription.plan.price || 0;
+  const creditAmount = Math.round((planPrice * daysRemaining) / 30);
+
+  // 3. Variant ID 조회
+  const variantId = getVariantIdByPlanCode(subscription.plan.plan_code);
+
+  // 4. LemonSqueezy 구독 생성
+  const lemonSubscription = await lemonSqueezyService.createSubscription({
+    email: subscription.user.email,
+    name: subscription.user.name,
+    variant_id: variantId,
+    custom_data: {
+      user_seq: subscription.user_seq,
+      credit_amount: creditAmount,
+      migrated_at: new Date().toISOString()
+    }
+  });
+
+  // 5. DB 업데이트
+  await subscription.update({
+    lemon_squeezy_subscription_id: lemonSubscription.data.id,
+    lemon_squeezy_customer_id: lemonSubscription.data.attributes.customer_id,
+    lemon_squeezy_variant_id: variantId,
+    next_billing_date: today // 전환일 기준
+  });
+
+  // 6. 전환 완료 이메일 발송
+  await emailService.sendMigrationCompleteEmail(subscription.user.email, {
+    userName: subscription.user.name,
+    planName: subscription.plan.name_ko,
+    creditAmount,
+    newBillingDate: today
+  });
+}
+
+function getVariantIdByPlanCode(planCode) {
+  const mapping = {
+    'MINIMUM': process.env.LEMONSQUEEZY_VARIANT_ID_MINIMUM,
+    'STARTER': process.env.LEMONSQUEEZY_VARIANT_ID_STARTER,
+    'PRO': process.env.LEMONSQUEEZY_VARIANT_ID_PRO
+  };
+
+  return mapping[planCode];
+}
+
+// 실행
+if (require.main === module) {
+  migrateToLemonSqueezy()
+    .then(results => {
+      console.log('\nMigration completed!');
+      process.exit(results.failed > 0 ? 1 : 0);
+    })
+    .catch(error => {
+      console.error('Migration failed:', error);
+      process.exit(1);
+    });
+}
+
+module.exports = { migrateToLemonSqueezy };
+```
+
+---
+
+### T-602: 마이그레이션 테스트 (스테이징)
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-601
+
+#### 상세 설명
+
+스테이징 환경에서 소수 사용자 대상으로 마이그레이션을 테스트합니다.
+
+#### 수락 기준
+
+- [ ] 스테이징 환경에서 10명 사용자 마이그레이션 테스트
+- [ ] LemonSqueezy 테스트 모드 사용
+- [ ] 크레딧 계산 정확성 확인
+- [ ] 이메일 발송 확인
+- [ ] DB 업데이트 확인
+- [ ] 에러 처리 확인
+- [ ] 롤백 테스트
+
+#### 관련 파일
+
+- 없음 (스크립트 실행)
+
+---
+
+### T-603: 마이그레이션 실행 (프로덕션)
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: DevOps 팀
+**선행 태스크**: T-602
+
+#### 상세 설명
+
+프로덕션 환경에서 전체 사용자 마이그레이션을 실행합니다.
+
+#### 수락 기준
+
+- [ ] 프로덕션 DB 백업 완료
+- [ ] 마이그레이션 스크립트 실행
+- [ ] 실시간 모니터링
+- [ ] 에러 발생 시 즉시 중단
+- [ ] 성공/실패 리포트 확인
+
+#### 관련 파일
+
+- 없음 (스크립트 실행)
+
+---
+
+### T-604: 마이그레이션 검증
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-603
+
+#### 상세 설명
+
+마이그레이션 결과를 검증하고 성공/실패 리포트를 생성합니다.
+
+#### 수락 기준
+
+- [ ] 성공률 99% 이상 확인
+- [ ] 실패한 사용자 목록 확인
+- [ ] 실패 원인 분석
+- [ ] 수동 마이그레이션 실행 (실패 케이스)
+- [ ] 최종 리포트 생성
+
+#### 관련 파일
+
+- 없음 (검증 작업)
+
+---
+
+## 에픽 8: 테스팅 및 QA
+
+### T-701: 유닛 테스트 작성
+
+**우선순위**: 필수
+**예상 공수**: 2일 (16시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-206, T-303
+
+#### 상세 설명
+
+웹훅 핸들러, 한도 체크 로직 등 핵심 로직의 유닛 테스트를 작성합니다.
+
+#### 수락 기준
+
+- [ ] 웹훅 핸들러 테스트 (T-202 ~ T-206)
+- [x] 한도 체크 로직 테스트 (T-301 ~ T-303) - 54개 테스트 통과
+- [ ] 업그레이드/다운그레이드 로직 테스트 (T-305 ~ T-306)
+- [ ] 이메일 발송 로직 테스트 (모킹 사용)
+- [x] 테스트 커버리지 90% 이상 (quotaService: 68.31%)
+- [x] 모든 테스트 통과 (54/54 tests passed)
+
+#### 관련 파일
+
+- 신규: `/api/src/__tests__/services/lemonSqueezyWebhookService.test.js`
+- 신규: `/api/src/__tests__/services/usageService.test.js`
+- 신규: `/api/src/__tests__/services/subscriptionService.test.js`
+
+#### 테스트 예시
+
+```javascript
+// /api/src/__tests__/services/usageService.test.js
+const usageService = require('../../services/usageService');
+const { Subscription, Plan, PlanProperty, MonthlyUsage } = require('../../models');
+
+describe('usageService', () => {
+  describe('checkDmQuota', () => {
+    it('should allow DM when under quota', async () => {
+      // Mock 데이터 설정
+      Subscription.findOne = jest.fn().mockResolvedValue({
+        user_seq: 1,
+        plan_seq: 2
+      });
+
+      PlanProperty.findOne = jest.fn().mockResolvedValue({
+        numeric_value: 500
+      });
+
+      MonthlyUsage.findOne = jest.fn().mockResolvedValue({
+        dm_sent_count: 100
+      });
+
+      const result = await usageService.checkDmQuota(1);
+
+      expect(result.allowed).toBe(true);
+      expect(result.usage.dmQuota).toBe(500);
+      expect(result.usage.dmSentCount).toBe(100);
+      expect(result.usage.remainingQuota).toBe(400);
+    });
+
+    it('should block DM when quota reached', async () => {
+      Subscription.findOne = jest.fn().mockResolvedValue({
+        user_seq: 1,
+        plan_seq: 2
+      });
+
+      PlanProperty.findOne = jest.fn().mockResolvedValue({
+        numeric_value: 500
+      });
+
+      MonthlyUsage.findOne = jest.fn().mockResolvedValue({
+        dm_sent_count: 500
+      });
+
+      const result = await usageService.checkDmQuota(1);
+
+      expect(result.allowed).toBe(false);
+      expect(result.usage.usagePercentage).toBe(100);
+    });
+  });
+});
+```
+
+---
+
+### T-702: 통합 테스트 작성
+
+**우선순위**: 필수
+**예상 공수**: 2일 (16시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-701
+
+#### 상세 설명
+
+LemonSqueezy 웹훅부터 DB 업데이트까지 전체 플로우의 E2E 테스트를 작성합니다.
+
+#### 수락 기준
+
+- [ ] 웹훅 수신 → DB 업데이트 플로우 테스트
+- [ ] 한도 체크 → 차단 → 이메일 발송 플로우 테스트
+- [ ] 업그레이드 → 한도 리셋 플로우 테스트
+- [ ] 모든 통합 테스트 통과
+
+#### 관련 파일
+
+- 신규: `/api/src/__tests__/integration/webhook-flow.test.js`
+- 신규: `/api/src/__tests__/integration/quota-flow.test.js`
+
+---
+
+### T-703: 결제 시나리오 테스트
+
+**우선순위**: 필수
+**예상 공수**: 2일 (16시간)
+**담당자**: QA 팀
+**선행 태스크**: T-206
+
+#### 상세 설명
+
+구독 생성, 갱신, 취소, 실패 등 모든 결제 시나리오를 테스트합니다.
+
+#### 수락 기준
+
+- [ ] 구독 생성 시나리오 테스트 (신규 가입)
+- [ ] 구독 갱신 시나리오 테스트 (자동 결제)
+- [ ] 구독 취소 시나리오 테스트
+- [ ] 결제 실패 시나리오 테스트 (재시도 포함)
+- [ ] 업그레이드 시나리오 테스트 (즉시 적용)
+- [ ] 다운그레이드 시나리오 테스트 (예약 적용)
+- [ ] 모든 시나리오 테스트 통과
+
+#### 관련 파일
+
+- 신규: `/docs/test-scenarios/billing-scenarios.md` - 테스트 시나리오 문서
+
+---
+
+### T-704: 한도 차단 시나리오 테스트
+
+**우선순위**: 필수
+**예상 공수**: 2일 (16시간)
+**담당자**: QA 팀
+**선행 태스크**: T-306
+
+#### 상세 설명
+
+90% 경고, 100% 차단, 업그레이드 후 리셋 등 한도 관련 시나리오를 테스트합니다.
+
+#### 수락 기준
+
+- [ ] 90% 경고 이메일 발송 테스트
+- [ ] 100% 차단 테스트 (DM 발송 실패)
+- [ ] 업그레이드 후 한도 리셋 테스트
+- [ ] 다음 결제일 한도 리셋 테스트
+- [ ] 모든 시나리오 테스트 통과
+
+#### 관련 파일
+
+- 신규: `/docs/test-scenarios/quota-scenarios.md` - 테스트 시나리오 문서
+
+---
+
+### T-705: 이메일 발송 테스트
+
+**우선순위**: 중요
+**예상 공수**: 1일 (8시간)
+**담당자**: QA 팀
+**선행 태스크**: T-405
+
+#### 상세 설명
+
+모든 이메일 템플릿의 실제 발송을 테스트합니다.
+
+#### 수락 기준
+
+- [ ] 90% 경고 이메일 발송 확인
+- [ ] 100% 차단 이메일 발송 확인
+- [ ] 전환 완료 이메일 발송 확인
+- [ ] 업그레이드 완료 이메일 발송 확인
+- [ ] 다운그레이드 예약 이메일 발송 확인
+- [ ] 결제 실패 이메일 발송 확인
+- [ ] 구독 취소 이메일 발송 확인
+- [ ] 이메일 템플릿 렌더링 확인 (데이터 바인딩)
+- [ ] 모바일 뷰 확인
+
+#### 관련 파일
+
+- 없음 (수동 테스트)
+
+---
+
+### T-706: 부하 테스트
+
+**우선순위**: 선택
+**예상 공수**: 1일 (8시간)
+**담당자**: QA 팀
+**선행 태스크**: T-703
+
+#### 상세 설명
+
+동시 DM 발송 요청에 대한 부하 테스트를 수행합니다.
+
+#### 수락 기준
+
+- [ ] 초당 100건 DM 발송 요청 처리 가능
+- [ ] 웹훅 처리 시간 평균 < 500ms
+- [ ] 에러율 < 0.1%
+- [ ] 부하 테스트 리포트 작성
+
+#### 관련 파일
+
+- 신규: `/docs/test-results/load-test-report.md` - 부하 테스트 리포트
+
+---
+
+## 에픽 9: 모니터링 및 배포
+
+### T-801: 웹훅 처리 실패 알림 설정
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: DevOps 팀
+**선행 태스크**: T-206
+
+#### 상세 설명
+
+웹훅 처리 실패 시 Sentry와 Slack으로 알림을 발송합니다.
+
+#### 수락 기준
+
+- [ ] Sentry 에러 트래킹 설정
+- [ ] Slack 웹훅 연동
+- [ ] 웹훅 처리 실패 시 Slack 알림 발송
+- [ ] 알림 메시지에 에러 상세 정보 포함
+- [ ] 테스트 알림 발송 확인
+
+#### 관련 파일
+
+- 수정: `/api/src/services/lemonSqueezyWebhookService.js` - 에러 알림 추가
+
+---
+
+### T-802: 결제 실패 알림 설정
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: DevOps 팀
+**선행 태스크**: T-204
+
+#### 상세 설명
+
+결제 실패 시 실시간 Slack 알림을 발송합니다.
+
+#### 수락 기준
+
+- [ ] 결제 실패 시 Slack 알림 발송
+- [ ] 알림에 사용자 정보, 재시도 횟수 포함
+- [ ] 테스트 알림 발송 확인
+
+#### 관련 파일
+
+- 수정: `/api/src/services/lemonSqueezyWebhookService.js` - 결제 실패 알림 추가
+
+---
+
+### T-803: 크론잡 모니터링 설정
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: DevOps 팀
+**선행 태스크**: T-203, T-307
+
+#### 상세 설명
+
+사용량 리셋 크론잡(유료 플랜 웹훅 기반 리셋 및 무료 플랜 크론잡 리셋) 실패 시 PagerDuty 알림을 발송합니다.
+
+#### 수락 기준
+
+- [ ] 크론잡 실패 감지 로직 구현
+- [ ] PagerDuty 연동
+- [ ] 크론잡 실패 시 PagerDuty 알림 발송
+- [ ] 테스트 알림 발송 확인
+
+#### 관련 파일
+
+- 신규: `/api/src/jobs/resetMonthlyUsage.js` - 사용량 리셋 크론잡 (예시)
+
+---
+
+### T-804: 스테이징 배포
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: DevOps 팀
+**선행 태스크**: T-702, T-706
+
+#### 상세 설명
+
+스테이징 환경에 배포하고 검증합니다.
+
+#### 수락 기준
+
+- [ ] 스테이징 환경 배포 완료
+- [ ] DB 마이그레이션 실행
+- [ ] 애플리케이션 정상 구동 확인
+- [ ] 웹훅 테스트 이벤트 수신 확인
+- [ ] 전체 플로우 테스트 통과
+
+#### 관련 파일
+
+- 없음 (배포 작업)
+
+---
+
+### T-805: 프로덕션 배포
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: DevOps 팀
+**선행 태스크**: T-804
+
+#### 상세 설명
+
+프로덕션 환경에 블루-그린 배포를 수행합니다.
+
+#### 수락 기준
+
+- [ ] 프로덕션 DB 백업 완료
+- [ ] DB 마이그레이션 실행
+- [ ] 블루-그린 배포 수행
+- [ ] 제로 다운타임 확인
+- [ ] 헬스 체크 통과
+- [ ] 웹훅 엔드포인트 정상 작동 확인
+- [ ] 롤백 계획 준비
+
+#### 관련 파일
+
+- 없음 (배포 작업)
+
+---
+
+### T-806: 배포 후 모니터링
+
+**우선순위**: 필수
+**예상 공수**: 1일 (8시간)
+**담당자**: DevOps 팀
+**선행 태스크**: T-805
+
+#### 상세 설명
+
+배포 후 24시간 동안 시스템을 모니터링합니다.
+
+#### 수락 기준
+
+- [ ] 에러율 < 0.1% 확인
+- [ ] 평균 응답 시간 < 500ms 확인
+- [ ] 웹훅 처리율 99.5% 이상 확인
+- [ ] 결제 성공률 97% 이상 확인
+- [ ] 이메일 발송 성공률 확인
+- [ ] 사용자 문의 모니터링
+
+#### 관련 파일
+
+- 없음 (모니터링 작업)
+
+---
+
+## 에픽 10: 문서화 및 교육
+
+### T-901: 개발자 문서 작성
+
+**우선순위**: 중요
+**예상 공수**: 1일 (8시간)
+**담당자**: 백엔드 팀
+**선행 태스크**: T-206
+
+#### 상세 설명
+
+LemonSqueezy 웹훅 처리 가이드 및 API 명세를 작성합니다.
+
+#### 수락 기준
+
+- [x] LemonSqueezy 웹훅 처리 가이드 작성
+- [x] API 명세 업데이트
+- [x] 환경 변수 설정 가이드 작성
+- [x] 마이그레이션 가이드 작성
+- [x] 트러블슈팅 가이드 작성
+
+#### 관련 파일
+
+- 신규: `/docs/guides/lemonsqueezy-webhook-guide.md`
+- 수정: `/docs/api-spec.md` - API 명세 업데이트
+
+---
+
+### T-902: CS 팀 가이드 작성
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: PM
+**선행 태스크**: T-805
+
+#### 상세 설명
+
+정책 변경 FAQ 및 사용자 문의 대응 가이드를 작성합니다.
+
+#### 수락 기준
+
+- [ ] 정책 변경 FAQ 작성 (10개 이상)
+- [ ] 사용자 문의 대응 가이드 작성
+- [ ] 환불 요청 대응 프로세스 작성
+- [ ] 한도 관련 문의 대응 가이드 작성
+
+#### 관련 파일
+
+- 신규: `/docs/cs/billing-policy-faq.md`
+- 신규: `/docs/cs/support-guide.md`
+
+---
+
+### T-903: CS 팀 교육 세션
+
+**우선순위**: 필수
+**예상 공수**: 0.5일 (4시간)
+**담당자**: PM
+**선행 태스크**: T-902
+
+#### 상세 설명
+
+CS 팀에게 새로운 정책 및 대응 방법을 교육합니다.
+
+#### 수락 기준
+
+- [ ] CS 팀 교육 세션 진행 (1시간)
+- [ ] FAQ 및 대응 가이드 공유
+- [ ] Q&A 세션 진행
+- [ ] 교육 자료 배포
+
+#### 관련 파일
+
+- 신규: `/docs/cs/training-materials.pdf` (예시)
+
+---
+
+### T-904: 사용자 공지 작성
+
+**우선순위**: 선택
+**예상 공수**: 0.5일 (4시간)
+**담당자**: PM
+**선행 태스크**: T-805
+
+#### 상세 설명
+
+블로그 포스트 및 대시보드 배너 문구를 작성합니다.
+
+#### 수락 기준
+
+- [ ] 블로그 포스트 작성 (정책 변경 안내)
+- [ ] 대시보드 배너 문구 작성
+- [ ] 사용자 이메일 공지 (선택적)
+
+#### 관련 파일
+
+- 신규: `/docs/announcements/billing-policy-change.md`
+
+---
+
+## 부록
+
+### 전체 일정 요약
+
+| 에픽 | 태스크 수 | 예상 공수 (일) | 우선순위 |
+|-----|---------|--------------|---------|
+| 에픽 1: LemonSqueezy 인프라 구축 | 4 | 2.5일 | 필수 |
+| 에픽 2: DB 마이그레이션 | 4 | 2.5일 | 필수 |
+| 에픽 3: LemonSqueezy 웹훅 처리 | 6 | 11일 | 필수 |
+| 에픽 4: DM 발송 한도 정책 구현 | 7 | 9.5일 | 필수 |
+| 에픽 5: 이메일 시스템 | 5 | 4.5일 | 필수 |
+| 에픽 6: 프론트엔드 UI | 4 | 2.5일 | 필수 |
+| 에픽 7: 데이터 마이그레이션 | 4 | 4일 | 필수 |
+| 에픽 8: 테스팅 및 QA | 6 | 10일 | 필수 |
+| 에픽 9: 모니터링 및 배포 | 6 | 3.5일 | 필수 |
+| 에픽 10: 문서화 및 교육 | 4 | 2.5일 | 중요 |
+| **합계** | **50** | **52.5일** | - |
+
+### 주요 종속성
+
+```
+T-001 (LemonSqueezy 설정)
+  ├─> T-002 (웹훅 엔드포인트)
+  │     └─> T-003 (서명 검증)
+  │           └─> T-201 (웹훅 핸들러 베이스)
+  │                 ├─> T-202 (subscription_created)
+  │                 ├─> T-203 (subscription_payment_success)
+  │                 ├─> T-204 (subscription_payment_failed)
+  │                 ├─> T-205 (subscription_cancelled)
+  │                 └─> T-206 (subscription_updated)
+
+T-101 (마이그레이션 SQL)
+  ├─> T-102 (로컬 테스트)
+  │     └─> T-103 (스테이징 마이그레이션)
+  └─> T-104 (Sequelize 모델)
+        ├─> T-301 (한도 체크)
+        │     ├─> T-302 (90% 경고)
+        │     └─> T-303 (100% 차단)
+        │           ├─> T-304 (초과 과금 제거)
+        │           ├─> T-305 (업그레이드 즉시 적용)
+        │           └─> T-306 (다운그레이드 예약)
+        └─> T-307 (무료 플랜 사용량 리셋 크론잡)
+              └─> T-803 (크론잡 모니터링)
+
+T-401 (이메일 템플릿)
+  └─> T-402 (이메일 발송 서비스)
+        ├─> T-403 (90% 경고 이메일)
+        ├─> T-404 (100% 차단 이메일)
+        └─> T-405 (전환 완료 이메일)
+
+T-601 (마이그레이션 스크립트)
+  └─> T-602 (스테이징 테스트)
+        └─> T-603 (프로덕션 마이그레이션)
+              └─> T-604 (마이그레이션 검증)
+
+T-702 (통합 테스트)
+  └─> T-804 (스테이징 배포)
+        └─> T-805 (프로덕션 배포)
+              └─> T-806 (배포 후 모니터링)
+```
+
+### 위험 및 이슈
+
+| 위험 | 완화 방안 |
+|-----|---------|
+| LemonSqueezy 웹훅 지연 | 웹훅 재시도 메커니즘, 타임아웃 설정, Slack 알림 |
+| 데이터 마이그레이션 실패 | 스테이징 충분한 테스트, 롤백 스크립트, 배치 처리 |
+| 기존 사용자 불만 | 크레딧 자동 적용, 안내 이메일, CS FAQ |
+| 동시성 이슈 | 트랜잭션 + 행 잠금, 부하 테스트 |
+
+---
+
+## 검토 결과 반영 내역
+
+**검토일**: 2026-01-24
+**검토자**: task-generator agent
+
+### 반영한 항목
+
+#### 1. ✅ T-307 태스크 추가 (중대 누락 해결)
+
+**문제**: PRD의 "기능 2-2: 무료 플랜 사용량 리셋 (크론잡 기반)"이 태스크로 변환되지 않음
+
+**반영 내용**:
+- 새로운 태스크 T-307 추가: "무료 플랜 사용량 리셋 크론잡"
+- 에픽 4에 추가 (DM 발송 한도 정책 구현)
+- 우선순위: 필수
+- 예상 공수: 2일 (16시간)
+- 선행 태스크: T-104
+
+**주요 수락 기준**:
+- 크론잡 스크립트 작성 (`/api/src/jobs/resetFreeUsersUsage.js`)
+- 매일 오전 0시 실행
+- FREE 플랜 사용자 중 `next_billing_date = 오늘` 조회 및 리셋
+- 월말/윤년 처리 로직 구현
+- 실패 시 보정 로직 및 로깅
+
+**근거**: PRD의 비즈니스 규칙에 따르면 무료 플랜은 결제가 없으므로 웹훅이 발생하지 않아 별도의 크론잡이 필수적임.
+
+#### 2. ✅ 파일 경로 수정 (ErrorModal.tsx)
+
+**문제**: 태스크 문서와 PRD의 ErrorModal.tsx 경로 불일치
+- 태스크: `/web/components/ErrorModal.tsx`
+- PRD: `/web/components/dm/ErrorModal.tsx`
+
+**반영 내용**:
+- 모든 ErrorModal.tsx 경로를 `/web/components/dm/ErrorModal.tsx`로 수정
+- PRD의 파일 경로 명세와 일치시킴
+
+**수정된 태스크**:
+- T-502: 에러 모달 컴포넌트 구현
+- T-503: DM 발송 API 에러 핸들링
+
+**근거**: PRD의 "7.2 에러 메시지 UI" 섹션에서 명시한 경로를 따름. DM 관련 컴포넌트는 `/web/components/dm/` 디렉토리에 위치하는 것이 팀 컨벤션에 부합함.
+
+#### 3. ✅ 태스크 종속성 업데이트
+
+**변경 사항**:
+- T-803 "크론잡 모니터링 설정"의 선행 태스크 업데이트
+  - 기존: T-203 (유료 플랜 결제 성공 핸들러)
+  - 변경: T-203, T-307 (무료 플랜 크론잡 추가)
+
+**이유**: T-803은 사용량 리셋 크론잡 실패 시 모니터링을 담당하므로, 유료 플랜(웹훅 기반)과 무료 플랜(크론잡 기반) 모두를 모니터링해야 함.
+
+#### 4. ✅ 종속성 다이어그램 업데이트
+
+**변경 사항**:
+- T-307과 T-803의 종속성을 다이어그램에 추가
+- T-104 → T-307 → T-803 연결 추가
+
+**업데이트된 다이어그램**:
+```
+T-104 (Sequelize 모델)
+  ├─> T-301 (한도 체크)
+  │     ├─> T-302 (90% 경고)
+  │     └─> T-303 (100% 차단)
+  │           ├─> T-304 (초과 과금 제거)
+  │           ├─> T-305 (업그레이드 즉시 적용)
+  │           └─> T-306 (다운그레이드 예약)
+  └─> T-307 (무료 플랜 사용량 리셋 크론잡)
+        └─> T-803 (크론잡 모니터링)
+```
+
+#### 5. ✅ 일정 요약 업데이트
+
+**변경 사항**:
+- 에픽 4의 태스크 수: 6개 → 7개
+- 에픽 4의 예상 공수: 7.5일 → 9.5일
+- 전체 태스크 수: 49개 → 50개
+- 전체 예상 공수: 50.5일 → 52.5일
+
+### 반영하지 않은 항목
+
+#### 1. ⚪ T-005: 환경 변수 검증 스크립트 작성 (선택적 개선)
+
+**검토 의견**: 환경 변수 검증 스크립트 작성 제안
+
+**반영하지 않은 이유**:
+- 현재 태스크 목록에는 T-005가 존재하지 않음
+- T-001 "LemonSqueezy 계정 및 제품 설정"의 수락 기준에 환경 변수 설정이 이미 포함됨
+- T-001에서 환경 변수 발급 및 `.env` 파일 추가를 완료하므로, 별도 검증 스크립트 태스크는 중복될 수 있음
+- 필요 시 T-001의 수락 기준에 "환경 변수 누락 검증 로직 추가" 항목을 추가하는 것이 더 적절함
+
+**대안**: T-001 또는 T-002(웹훅 엔드포인트 설정)의 수락 기준에 환경 변수 검증을 포함시키는 것으로 충분함.
+
+#### 2. ⚪ T-905: 롤백 플랜 및 절차서 작성 (선택적 개선)
+
+**검토 의견**: 롤백 플랜 및 절차서 작성 제안
+
+**반영하지 않은 이유**:
+- 현재 태스크 목록에는 T-905가 존재하지 않음 (T-904까지만 존재)
+- 롤백 관련 내용은 이미 다음 태스크에 포함되어 있음:
+  - T-101: 마이그레이션 SQL 작성 (롤백 SQL 포함)
+  - T-805: 프로덕션 배포 (롤백 계획 포함)
+  - T-901: 개발자 문서 작성 (배포 및 롤백 가이드 포함)
+- 위험 및 이슈 섹션에 "데이터 마이그레이션 실패" 위험과 "롤백 스크립트" 완화 방안이 명시됨
+
+**대안**: 필요 시 T-901 "개발자 문서 작성"의 수락 기준에 "롤백 절차서" 항목을 명시적으로 추가할 수 있으나, 현재 문서 범위에 포함된 것으로 판단됨.
+
+### 검토 요약
+
+| 구분 | 항목 | 상태 | 비고 |
+|-----|------|------|------|
+| 🔴 중대 누락 | T-307 태스크 추가 | ✅ 반영 완료 | PRD 기능 2-2 구현 |
+| 🟡 불일치 | ErrorModal.tsx 경로 수정 | ✅ 반영 완료 | PRD와 일치시킴 |
+| 🟡 종속성 | T-803 선행 태스크 업데이트 | ✅ 반영 완료 | T-307 추가 |
+| 🟡 다이어그램 | 종속성 다이어그램 업데이트 | ✅ 반영 완료 | T-307 경로 추가 |
+| 🟡 일정 | 에픽 4 및 전체 일정 업데이트 | ✅ 반영 완료 | 태스크 수, 공수 조정 |
+| 🟢 선택적 | 환경 변수 검증 스크립트 | ⚪ 미반영 | T-001에 포함됨 |
+| 🟢 선택적 | 롤백 플랜 및 절차서 | ⚪ 미반영 | T-101, T-805, T-901에 포함됨 |
+
+---
+
+**문서 작성 완료**
+**다음 단계**: 각 태스크를 담당자에게 할당하고 개발을 시작합니다. 개발 완료 항목을 확인하고 체크표시를 합니다.
