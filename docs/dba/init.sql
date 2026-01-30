@@ -159,9 +159,8 @@ CREATE TABLE `tb_plans` (
   `description_en` VARCHAR(100) NOT NULL COMMENT '플랜 설명 (영어)',
   `description_ja` VARCHAR(100) NOT NULL COMMENT '플랜 설명 (일본어)',
   `sort_num` TINYINT UNSIGNED NOT NULL COMMENT '정렬 순서',
-  `price_ko` DECIMAL(12,2) UNSIGNED NOT NULL COMMENT '가격 (KRW)',
-  `price_en` DECIMAL(12,2) UNSIGNED NOT NULL COMMENT '가격 (USD)',
-  `price_ja` DECIMAL(12,2) UNSIGNED NOT NULL COMMENT '가격 (JPY)',
+  `fixed_price_ko` DECIMAL(12,2) UNSIGNED NULL COMMENT '정가 (원)',
+  `price_ko` DECIMAL(12,2) UNSIGNED NOT NULL COMMENT '판매가 (원)',
   `status` ENUM('ACTIVATED', 'SUSPENDED') NOT NULL DEFAULT 'ACTIVATED' COMMENT '플랜 상태',
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
   `created_by` INT UNSIGNED NOT NULL COMMENT '생성자',
@@ -169,7 +168,7 @@ CREATE TABLE `tb_plans` (
   `updated_by` INT UNSIGNED NULL COMMENT '수정자',
   UNIQUE INDEX `UNQ_PLAN_01` (`plan_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-COMMENT='요금제 플랜 정보를 저장하는 테이블';
+COMMENT='요금제 플랜 정보를 저장하는 테이블 (가격은 KRW 기준, 환율 실시간 적용)';
 
 -- ============================================
 -- Table: tb_plan_properties

@@ -22,8 +22,6 @@ INSERT INTO `tb_plans` (
   `description_ja`,
   `sort_num`,
   `price_ko`,
-  `price_en`,
-  `price_ja`,
   `status`,
   `created_by`,
   `created_at`
@@ -39,8 +37,6 @@ INSERT INTO `tb_plans` (
   'For service testing and small personal accounts',
   'サービステストと小規模個人アカウント用',
   1,
-  0.00,
-  0.00,
   0.00,
   'ACTIVATED',
   1,
@@ -58,8 +54,6 @@ INSERT INTO `tb_plans` (
   '1人クリエイターと小規模インフルエンサー用',
   2,
   10000.00,
-  8.50,
-  1200.00,
   'ACTIVATED',
   1,
   NOW()
@@ -76,8 +70,6 @@ INSERT INTO `tb_plans` (
   '小規模ビジネスとアクティブなクリエイター用',
   3,
   15000.00,
-  13.00,
-  1800.00,
   'ACTIVATED',
   1,
   NOW()
@@ -94,8 +86,6 @@ INSERT INTO `tb_plans` (
   'エージェンシー、ブランド、大規模マーケティング運用用',
   4,
   50000.00,
-  42.00,
-  6000.00,
   'ACTIVATED',
   1,
   NOW()
