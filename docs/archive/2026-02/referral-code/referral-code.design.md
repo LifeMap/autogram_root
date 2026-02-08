@@ -570,28 +570,28 @@ router.use('/referrals', referralRoutes);
 
 ### Phase 1: DB + 유저코드 (2일)
 
-- [ ] `api/src/utils/userCode.js` 생성 (generateUserCode, isValidUserCode)
-- [ ] `api/src/models/User.js` - user_code, referrer_user_seq 컬럼 추가
-- [ ] `api/src/models/index.js` - User self-reference 관계 추가
-- [ ] `api/migrations/20260208000000-add-referral-columns.js` 생성
-- [ ] `api/src/services/authService.js` - registerWithEmail()에 user_code 생성 추가
-- [ ] `api/src/services/authService.js` - loginWithGoogle()에 user_code 생성 추가
-- [ ] `api/src/services/authService.js` - loginWithInstagram()에 user_code 생성 추가
-- [ ] `api/src/services/authService.js` - getCurrentUser()에 userCode, hasReferrer 추가
-- [ ] 마이그레이션 실행 테스트
+- [x] `api/src/utils/userCode.js` 생성 (generateUserCode, isValidUserCode)
+- [x] `api/src/models/User.js` - user_code, referrer_user_seq 컬럼 추가
+- [x] `api/src/models/index.js` - User self-reference 관계 추가
+- [x] `api/migrations/20260208000000-add-referral-columns.js` 생성
+- [x] `api/src/services/authService.js` - registerWithEmail()에 user_code 생성 추가
+- [x] `api/src/services/authService.js` - loginWithGoogle()에 user_code 생성 추가
+- [x] `api/src/services/authService.js` - loginWithInstagram()에 user_code 생성 추가
+- [x] `api/src/services/authService.js` - getCurrentUser()에 userCode, hasReferrer 추가
+- [x] 마이그레이션 실행 테스트
 
 ### Phase 2: 추천인 코드 입력 + 프론트엔드 (1일)
 
-- [ ] `api/src/services/referralService.js` 생성 (setReferrer)
-- [ ] `api/src/controllers/referralController.js` 생성
-- [ ] `api/src/routes/referralRoutes.js` 생성
-- [ ] `api/src/routes/index.js` - referralRoutes 등록
-- [ ] `api/src/utils/errors.js` - 추천 관련 에러 코드 추가
-- [ ] `web/messages/ko.json` - referral 메시지 추가
-- [ ] `web/messages/en.json` - referral 메시지 추가
-- [ ] `web/app/dashboard/settings/page.tsx` - 유저코드 표시 + 복사 UI
-- [ ] `web/app/dashboard/settings/page.tsx` - 추천인 코드 입력 UI
-- [ ] OAuth 가입 완료 모달 - 추천인 코드 입력 (선택)
+- [x] `api/src/services/referralService.js` 생성 (setReferrer)
+- [x] `api/src/controllers/referralController.js` 생성
+- [x] `api/src/routes/referralRoutes.js` 생성
+- [x] `api/src/routes/index.js` - referralRoutes 등록
+- [x] `api/src/constants/errorMessages.js` - 추천 관련 에러 코드 추가
+- [x] `web/messages/ko.json` - referral 메시지 추가
+- [x] `web/messages/en.json` - referral 메시지 추가
+- [x] `web/app/dashboard/settings/page.tsx` - 유저코드 표시 + 복사 UI
+- [x] `web/app/dashboard/settings/page.tsx` - 추천인 코드 입력 UI
+- [ ] OAuth 가입 완료 모달 - 추천인 코드 입력 *(선택사항 - 미구현 결정, 설정 페이지에서 입력 가능)*
 
 ### Phase 3: 쿠폰 (TBD)
 
@@ -1263,24 +1263,24 @@ export function useApplyCoupons() {
 
 ### 12.15 구현 체크리스트 (Phase 3)
 
-- [ ] `api/src/models/ReferralCoupon.js` 생성
-- [ ] `api/src/models/MonthlyUsage.js` - bonus_dm_count 컬럼 추가
-- [ ] `api/src/models/index.js` - ReferralCoupon 관계 추가
-- [ ] `api/migrations/20260208100000-add-referral-coupons.js` 생성
-- [ ] `api/src/services/couponService.js` 생성 (issueCoupon, applyCoupons, getUserCoupons, expireExpiredCoupons)
-- [ ] `api/src/controllers/couponController.js` 생성
-- [ ] `api/src/routes/referralRoutes.js` - GET /coupons, POST /coupons/apply 추가
-- [ ] `api/src/constants/errorMessages.js` - 쿠폰 에러 코드 4개 추가
-- [ ] `api/src/services/lemonSqueezyWebhookService.js` - isFirstPayment 분기에 쿠폰 발급 추가
-- [ ] `api/src/services/quotaService.js` - checkQuota, incrementDmCount에 bonus 합산
-- [ ] `api/src/services/usageService.js` - getCurrentUsage에 bonusDmCount 추가
-- [ ] `api/src/jobs/couponExpiryScheduler.js` 생성
-- [ ] `web/lib/api/referrals.ts` - getCoupons, applyCoupons 추가
-- [ ] `web/hooks/useReferral.ts` - useCoupons, useApplyCoupons 추가
-- [ ] `web/app/dashboard/settings/page.tsx` - 쿠폰 목록 + 사용 UI 추가
-- [ ] `web/messages/ko.json` - coupon 메시지 추가
-- [ ] `web/messages/en.json` - coupon 메시지 추가
-- [ ] `web/messages/ja.json` - coupon 메시지 추가
+- [x] `api/src/models/ReferralCoupon.js` 생성
+- [x] `api/src/models/MonthlyUsage.js` - bonus_dm_count 컬럼 추가
+- [x] `api/src/models/index.js` - ReferralCoupon 관계 추가
+- [x] `api/migrations/20260208100000-add-referral-coupons.js` 생성
+- [x] `api/src/services/couponService.js` 생성 (issueCoupon, applyCoupons, getUserCoupons, expireExpiredCoupons)
+- [x] `api/src/controllers/couponController.js` 생성
+- [x] `api/src/routes/referralRoutes.js` - GET /coupons, POST /coupons/apply 추가
+- [x] `api/src/constants/errorMessages.js` - 쿠폰 에러 코드 4개 추가
+- [x] `api/src/services/lemonSqueezyWebhookService.js` - isFirstPayment 분기에 쿠폰 발급 추가
+- [x] `api/src/services/quotaService.js` - checkQuota, incrementDmCount에 bonus 합산
+- [x] `api/src/services/usageService.js` - getCurrentUsage에 bonusDmCount 추가
+- [x] `api/src/jobs/couponExpiryScheduler.js` 생성
+- [x] `web/lib/api/referrals.ts` - getCoupons, applyCoupons 추가
+- [x] `web/hooks/useReferral.ts` - useCoupons, useApplyCoupons 추가
+- [x] `web/app/dashboard/settings/page.tsx` - 쿠폰 목록 + 사용 UI 추가
+- [x] `web/messages/ko.json` - coupon 메시지 추가
+- [x] `web/messages/en.json` - coupon 메시지 추가
+- [x] `web/messages/ja.json` - coupon 메시지 추가
 
 ---
 

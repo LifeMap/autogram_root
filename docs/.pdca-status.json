@@ -1,21 +1,16 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-02-08T12:00:00.000Z",
-  "activeFeatures": ["referral-code"],
-  "primaryFeature": "referral-code",
+  "lastUpdated": "2026-02-09T02:15:00.000Z",
+  "activeFeatures": [],
+  "primaryFeature": null,
   "features": {
     "referral-code": {
-      "phase": "complete",
+      "phase": "archived",
       "matchRate": 97,
-      "analysisPath": "docs/03-analysis/referral-code.analysis.md",
-      "phase3AnalysisPath": "docs/03-analysis/referral-code-phase3.analysis.md",
-      "reportPath": "docs/04-report/referral-code.report.md",
-      "phase3Status": "implementation-complete",
+      "archivedTo": "docs/archive/2026-02/referral-code/",
+      "archivedAt": "2026-02-09T02:15:00.000Z",
       "startedAt": "2026-02-08T12:00:00.000Z",
-      "completedAt": "2026-02-08T14:00:00.000Z",
-      "planPath": "docs/01-plan/features/referral-code.plan.md",
-      "designPath": "docs/02-design/features/referral-code.design.md",
-      "prdPath": "docs/prd-referral-system.md"
+      "completedAt": "2026-02-09T02:15:00.000Z"
     }
   },
   "pipeline": {
@@ -26,7 +21,14 @@
   "session": {
     "startedAt": "2026-01-31T19:18:06.872Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-02-08T12:00:00.000Z"
+    "lastActivity": "2026-02-09T02:15:00.000Z"
   },
-  "history": []
+  "history": [
+    {
+      "feature": "referral-code",
+      "matchRate": 97,
+      "archivedAt": "2026-02-09",
+      "archivedTo": "docs/archive/2026-02/referral-code/"
+    }
+  ]
 }
