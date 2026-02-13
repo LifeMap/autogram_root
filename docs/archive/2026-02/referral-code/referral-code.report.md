@@ -1,6 +1,6 @@
 # PDCA 완료 보고서: 추천인 코드 시스템 (referral-code)
 
-> **요약**: 사용자 추천 프로그램을 위한 3단계 기능 개발 완료. 전체 설계-구현 일치율 97% 달성 (Phase 1: 100%, Phase 2: 95%, Phase 3: 100% 백엔드/95% 프론트엔드). 모든 필수 기능 구현 완료.
+> **요약**: 사용자 추천 프로그램을 위한 3단계 기능 개발 완료. 양쪽 쿠폰 발급(피추천인+추천인) 반영 후 설계-구현 일치율 93% 달성. 설계 문서 동기화 후 97%+ 가능. 모든 필수 기능 구현 완료.
 >
 > **작성자**: Autogram 개발팀
 > **작성일**: 2026-02-09
@@ -43,12 +43,14 @@
 
 #### 검증 (Check)
 - **분석 문서**: `docs/03-analysis/referral-code.analysis.md` (Phase 1~3 종합)
-- **분석 결과**: 전체 설계-구현 일치율 97% (PASS)
-- **발견된 Gap**: 7건 (모두 Low 심각도)
+- **v1 분석 결과**: 전체 97% (PASS) - 초기 구현 기준
+- **v2 분석 결과**: 전체 93% (PASS) - 양쪽 쿠폰 발급 반영 후
+- **발견된 Gap**: v1: 7건 Low, v2: 3건 Missing + 6건 Changed + 6건 Added
 
 #### 개선 (Act)
-- **반복 횟수**: 0회 (97% >= 90%, 추가 개선 불필요)
-- **최종 일치율**: 전체 97% (Phase 1: 100%, Phase 2: 95%, Phase 3 백엔드: 100%, Phase 3 프론트엔드: 95%)
+- **반복 횟수**: 0회 (93% >= 90%, 추가 코드 개선 불필요)
+- **설계 문서 동기화**: issueCoupon 양쪽 발급, UNQ_COUPON_PAIR 설명, 웹훅 설명 업데이트 완료
+- **최종 일치율**: 설계 동기화 후 97%+ 예상
 
 ---
 
@@ -82,7 +84,7 @@
 |---|------|:----:|------|
 | 1 | 쿠폰 모델 | ✅ | `api/src/models/ReferralCoupon.js` - 완전 구현 (AVAILABLE/USED/EXPIRED 상태) |
 | 2 | MonthlyUsage 수정 | ✅ | `api/src/models/MonthlyUsage.js` - bonus_dm_count 컬럼 추가 |
-| 3 | 쿠폰 서비스 | ✅ | `api/src/services/couponService.js` - issueCoupon, applyCoupons, getUserCoupons, expireExpiredCoupons |
+| 3 | 쿠폰 서비스 | ✅ | `api/src/services/couponService.js` - issueCoupon(양쪽 발급), applyCoupons, getUserCoupons, expireExpiredCoupons |
 | 4 | 쿠폰 컨트롤러 | ✅ | `api/src/controllers/couponController.js` - GET/POST 엔드포인트 |
 | 5 | 쿠폰 라우트 | ✅ | GET /api/referrals/coupons, POST /api/referrals/coupons/apply |
 | 6 | 쿠폰 마이그레이션 | ✅ | `api/migrations/20260208100000-add-referral-coupons.js` - 완전 구현 |
@@ -104,7 +106,7 @@
 | **DB 마이그레이션 파일** | 2개 |
 | **API 엔드포인트** | 3개 (POST /set-referrer, GET /coupons, POST /coupons/apply) |
 | **TypeScript 타입 에러** | 0개 |
-| **설계-구현 일치율** | Phase 1: 100%, Phase 2: 95%, Phase 3: 97%, **전체: 97%** |
+| **설계-구현 일치율** | v1: 97%, **v2(양쪽 발급 반영): 93%** (설계 동기화 후 97%+) |
 
 ### 2.3 코드 품질
 
@@ -140,27 +142,30 @@
 
 **판정**: ✅ PASS (Low severity gap)
 
-#### Phase 3: 쿠폰 시스템 (97% 일치)
-쿠폰 발급/적용/조회의 핵심 로직 완전 구현. UI 다국어 세부사항 미구현:
+#### Phase 3: 쿠폰 시스템 (93% 일치 → 설계 동기화 후 97%+)
+쿠폰 발급/적용/조회의 핵심 로직 완전 구현. **양쪽 쿠폰 발급으로 비즈니스 로직 확장**:
 
-**발견된 Gap**:
-| # | 항목 | 설계 | 구현 | 심각도 | 영향 |
-|---|------|------|------|:-----:|------|
-| 1 | coupon.empty i18n 키 | 정의함 | 미구현 | Low | UI 섹션 숨김으로 처리 |
-| 2 | effectiveQuota 필드 | 별도 필드 | dmQuota에 merge | Low | 기능적 동일 (합산 로직) |
-| 3 | ja.json 쿠폰 공지 | 상세 텍스트 | 축약 텍스트 | Low | 번역 미세 차이 |
-| 4 | coupon section 조건 | 보유 시 표시 | 보유 시 표시 | NONE | 설계대로 구현 |
+**주요 변경 (v2)**:
+| # | 항목 | 원래 설계 | 현재 구현 | 심각도 | 비고 |
+|---|------|----------|----------|:-----:|------|
+| 1 | issueCoupon 수령자 | 피추천인만 (1건) | 피추천인+추천인 (2건) | Medium | 비즈니스 확장, 설계 동기화 완료 |
+| 2 | coupon.empty i18n 키 | 정의함 | 미구현 | Low | UI 섹션 숨김으로 처리 |
+| 3 | coupon.errors.* i18n 키 | 3개 정의 | 미구현 | Low | API 에러 메시지 직접 사용 |
+| 4 | OAuth welcome modal | 설계됨 | 미구현 | Low | 의도적 미구현 (설정 페이지 대체) |
 
-**판정**: ✅ PASS (97% 일치, 3개 Low severity gap)
+**판정**: ✅ PASS (93% 일치, Medium 1건은 설계 동기화 완료)
 
 ### 3.2 추가 개선사항 (설계에 없는 항목)
 
 설계 이상의 추가 기능 구현:
-1. ✅ 쿠폰 조회 API 응답에 daysLeft 계산 필드 추가
-2. ✅ applyCoupons 함수에서 만료 쿠폰 자동 필터링
-3. ✅ usageService에 bonusDmCount 필드 명시적 분리 (effectiveQuota와 구분)
-4. ✅ 쿠폰 적용 시 applied_month 자동 기록
-5. ✅ quotaService에서 보너스 DM 합산 로직 강화
+1. ✅ **양쪽 쿠폰 발급** - issueCoupon에서 피추천인+추천인 모두 쿠폰 지급
+2. ✅ 쿠폰 조회 API 응답에 daysLeft 계산 필드 추가
+3. ✅ applyCoupons 함수에서 만료 쿠폰 자동 필터링
+4. ✅ usageService에 bonusDmCount 필드 명시적 분리 (effectiveQuota와 구분)
+5. ✅ 쿠폰 적용 시 applied_month 자동 기록
+6. ✅ quotaService에서 보너스 DM 합산 로직 강화
+7. ✅ registerSuccess, registerFailed, coupon.applyFailed i18n 키 추가
+8. ✅ 스케줄러 timezone `Asia/Seoul` 명시
 
 ### 3.3 위험 요소 분석
 
@@ -418,8 +423,9 @@
 
 ### 9.2 검증 완료
 - [x] TypeScript 타입 검사 (0 에러)
-- [x] 설계-구현 비교 분석 (97% 일치)
-- [x] Gap 분석 및 분류 (Low severity 7개)
+- [x] 설계-구현 비교 분석 (v1: 97%, v2: 93%)
+- [x] Gap 분석 및 분류 (v2: Missing 3건, Changed 6건, Added 6건)
+- [x] 설계 문서 동기화 (양쪽 쿠폰 발급 반영)
 - [x] 코드 품질 검토 (합격)
 
 ### 9.3 문서화 완료
@@ -446,7 +452,7 @@
 
 | 항목 | 결과 |
 |------|:----:|
-| **설계 준수율** | 97% ✅ |
+| **설계 준수율** | 93% (설계 동기화 후 97%+) ✅ |
 | **기능 완성도** | 100% ✅ |
 | **코드 품질** | 우수 ✅ |
 | **다국어 지원** | 3개 언어 ✅ |
@@ -477,8 +483,9 @@
 ### 10.3 주의사항
 
 1. **쿠폰 발급 조건**
-   - 피추천인 최초 유료 결제 시만 발급
-   - 동일 추천인-피추천인 쌍은 1회만 발급 (UNIQUE 제약)
+   - 피추천인 최초 유료 결제 시 양쪽(피추천인+추천인) 동시 발급
+   - 동일 (user_seq, referrer_user_seq) 쌍은 1회만 발급 (UNIQUE 제약)
+   - 추천인 쿠폰 발급 실패 시 피추천인 쿠폰에 영향 없음
 
 2. **환경변수 관리**
    - REFERRAL_COUPON_DM_AMOUNT: 기본값 100 (조정 가능)

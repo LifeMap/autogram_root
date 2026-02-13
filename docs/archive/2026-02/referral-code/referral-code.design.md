@@ -641,8 +641,8 @@ REFERRAL_COUPON_EXPIRY_DAYS=30      # 쿠폰 유효기간 (일)
 ```sql
 CREATE TABLE tb_referral_coupons (
   seq INT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '쿠폰 ID',
-  user_seq INT UNSIGNED NOT NULL COMMENT '쿠폰 소유자 (피추천인)',
-  referrer_user_seq INT UNSIGNED NOT NULL COMMENT '추천인 user seq',
+  user_seq INT UNSIGNED NOT NULL COMMENT '쿠폰 소유자 (피추천인 또는 추천인)',
+  referrer_user_seq INT UNSIGNED NOT NULL COMMENT '상대방 user seq',
   dm_amount INT UNSIGNED NOT NULL DEFAULT 100 COMMENT '추가 DM 발송량',
   status ENUM('AVAILABLE', 'USED', 'EXPIRED') NOT NULL DEFAULT 'AVAILABLE' COMMENT '쿠폰 상태',
   issued_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '발급일',
@@ -663,8 +663,8 @@ CREATE TABLE tb_referral_coupons (
 ```
 
 **설계 근거**:
-- `UNQ_COUPON_PAIR`: 동일 추천인-피추천인 쌍으로 중복 발급 방지 (웹훅 재시도 안전)
-- `user_seq + referrer_user_seq`: 피추천인이 여러 명을 추천받아도 각각 1회씩만 발급
+- `UNQ_COUPON_PAIR`: 동일 (user_seq, referrer_user_seq) 쌍으로 중복 발급 방지 (웹훅 재시도 안전)
+- 양쪽 발급: 피추천인 쿠폰 `(referee, referrer)` + 추천인 쿠폰 `(referrer, referee)` — 서로 다른 쌍이므로 UNIQUE 충돌 없음
 - `status` ENUM: 상태 전이 — `AVAILABLE` → `USED` (사용자 적용) 또는 `EXPIRED` (스케줄러)
 - `applied_month`: 어느 월에 적용했는지 추적 (NULL이면 미사용)
 - `ON DELETE CASCADE`: 유저 탈퇴 시 쿠폰도 삭제
@@ -842,16 +842,19 @@ const DM_AMOUNT = parseInt(process.env.REFERRAL_COUPON_DM_AMOUNT || '100', 10);
 const EXPIRY_DAYS = parseInt(process.env.REFERRAL_COUPON_EXPIRY_DAYS || '30', 10);
 
 /**
- * 쿠폰 발급 (피추천인에게)
+ * 쿠폰 발급 (피추천인 + 추천인 양쪽 모두)
  * @param {number} refereeUserSeq - 피추천인 user seq
- * @returns {Promise<object|null>} 발급된 쿠폰 또는 null (추천인 없음/이미 발급)
+ * @returns {Promise<object|null>} 피추천인 쿠폰 또는 null (추천인 없음/이미 발급)
  *
  * 로직:
  * 1. 피추천인의 referrer_user_seq 조회
  * 2. referrer가 없으면 null 반환 (추천인 미등록)
  * 3. 이미 동일 쌍으로 발급된 쿠폰 확인 (UNQ_COUPON_PAIR)
  * 4. 이미 있으면 null 반환 (중복 방지 - 웹훅 재시도 안전)
- * 5. 쿠폰 생성: dm_amount=env, expires_at=now+env일
+ * 5. 피추천인 쿠폰 생성: user_seq=referee, referrer_user_seq=referrer
+ * 6. 추천인 쿠폰 생성: user_seq=referrer, referrer_user_seq=referee (별도 try-catch)
+ *    - UNQ_COUPON_PAIR 충돌 시 graceful 처리 (이미 발급된 경우)
+ *    - 추천인 쿠폰 실패해도 피추천인 쿠폰에 영향 없음
  */
 export async function issueCoupon(refereeUserSeq) { ... }
 
@@ -887,7 +890,7 @@ export async function expireExpiredCoupons() { ... }
 ```
 
 **설계 근거**:
-- `issueCoupon`: 웹훅 재시도에 안전 (UNQ_COUPON_PAIR + 중복 체크)
+- `issueCoupon`: 피추천인+추천인 양쪽 발급, 웹훅 재시도에 안전 (UNQ_COUPON_PAIR + 중복 체크)
 - `applyCoupons`: 복수 쿠폰 동시 적용 지원, 트랜잭션으로 원자성 보장
 - `expireExpiredCoupons`: 별도 스케줄러에서 일 1회 실행 (또는 조회 시 Lazy expire)
 
@@ -955,6 +958,7 @@ if (isFirstPayment) {
 **설계 근거**:
 - `transaction.commit()` 후 비동기(`setImmediate`) 실행 — 쿠폰 발급 실패가 결제 처리를 롤백시키지 않음
 - `issueCoupon` 내부에서 중복 체크하므로 웹훅 재시도에 안전
+- 1회 호출로 피추천인+추천인 양쪽 쿠폰 발급 (추천인 쿠폰 실패 시 피추천인 쿠폰에 영향 없음)
 
 #### 12.10.2 `quotaService.js` - 쿼터에 보너스 합산
 

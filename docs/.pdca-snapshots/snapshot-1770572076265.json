@@ -1,0 +1,38 @@
+{
+  "timestamp": "2026-02-08T17:34:36.260Z",
+  "reason": "compaction",
+  "status": {
+    "version": "2.0",
+    "lastUpdated": "2026-02-09T02:15:00.000Z",
+    "activeFeatures": [],
+    "primaryFeature": null,
+    "features": {
+      "referral-code": {
+        "phase": "archived",
+        "matchRate": 97,
+        "archivedTo": "docs/archive/2026-02/referral-code/",
+        "archivedAt": "2026-02-09T02:15:00.000Z",
+        "startedAt": "2026-02-08T12:00:00.000Z",
+        "completedAt": "2026-02-09T02:15:00.000Z"
+      }
+    },
+    "pipeline": {
+      "currentPhase": 1,
+      "level": "Dynamic",
+      "phaseHistory": []
+    },
+    "session": {
+      "startedAt": "2026-01-31T19:18:06.872Z",
+      "onboardingCompleted": false,
+      "lastActivity": "2026-02-09T02:15:00.000Z"
+    },
+    "history": [
+      {
+        "feature": "referral-code",
+        "matchRate": 97,
+        "archivedAt": "2026-02-09",
+        "archivedTo": "docs/archive/2026-02/referral-code/"
+      }
+    ]
+  }
+}
